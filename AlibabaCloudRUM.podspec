@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
 
     s.homepage         = 'https://help.aliyun.com/zh/arms/user-experience-monitoring/access-to-ios-applications'
     s.license          = { :type => 'MIT', :file => 'LICENSE' }
-    s.author           = { 'aliyun-log' => 'yulong.gyl@alibaba-inc.com' }
+    s.author           = { 'aliyun-log' => 'aliyunsdk@aliyun.com' }
     s.source           = { :git => 'https://gitee.com/aliyun-sls/aliyun-log-ios-sdk.git', :tag => s.version.to_s }
     s.social_media_url = 'https://help.aliyun.com/zh/arms/product-overview'
 
