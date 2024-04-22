@@ -1,0 +1,33 @@
+################################################################################################################################
+##################################################### podspec file for dev #####################################################
+################################################################################################################################
+
+Pod::Spec.new do |s|
+    s.name             = 'AlibabaCloudRUM'
+    s.version          = "0.1.0-beta.1"
+    s.summary          = 'AlibabaCloud RUM service for iOS.'
+
+    s.description      = <<-DESC
+    iOS SDK for Aliyun RUM.
+    https://help.aliyun.com/zh/arms/user-experience-monitoring/product-overview
+    https://help.aliyun.com/zh/arms/user-experience-monitoring/access-to-ios-applications
+    DESC
+
+    s.homepage         = 'https://help.aliyun.com/zh/arms/user-experience-monitoring/access-to-ios-applications'
+    s.license          = { :type => 'MIT', :file => 'LICENSE' }
+    s.author           = { 'aliyun-log' => 'yulong.gyl@alibaba-inc.com' }
+    s.source           = { :git => 'https://gitee.com/aliyun-sls/aliyun-log-ios-sdk.git', :tag => s.version.to_s }
+    s.social_media_url = 'https://help.aliyun.com/zh/arms/product-overview'
+
+    s.platform     = :ios, "10.0"
+
+    s.requires_arc  = true
+    s.libraries = 'z', "c++", "resolv"
+    s.swift_version = "5.0"
+    s.vendored_frameworks = 'Sources/OpenRUM/OpenRUM.xcframework'
+    s.source_files = 'Sources/AliyunRUM/**/*.{m,h,swift}'
+    s.pod_target_xcconfig = {
+        'OTHER_LDFLAGS' => '-ObjC'
+    }
+end
+
