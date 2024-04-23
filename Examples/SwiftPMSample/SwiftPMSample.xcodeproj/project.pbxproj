@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		F8359F492BCCFBA80047B0DD /* OpenRUM in Frameworks */ = {isa = PBXBuildFile; productRef = F8359F482BCCFBA80047B0DD /* OpenRUM */; };
+		F856A1EC2BD6985F004E7E34 /* AlibabaCloudRUM in Frameworks */ = {isa = PBXBuildFile; productRef = F856A1EB2BD6985F004E7E34 /* AlibabaCloudRUM */; };
+		F856A1EE2BD6985F004E7E34 /* OpenRUM in Frameworks */ = {isa = PBXBuildFile; productRef = F856A1ED2BD6985F004E7E34 /* OpenRUM */; };
 		F8C2F4772BC9260400921B34 /* SwiftPMSampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C2F4762BC9260400921B34 /* SwiftPMSampleApp.swift */; };
 		F8C2F4792BC9260400921B34 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C2F4782BC9260400921B34 /* ContentView.swift */; };
 		F8C2F47B2BC9260500921B34 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8C2F47A2BC9260500921B34 /* Assets.xcassets */; };
@@ -27,6 +29,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F856A1EE2BD6985F004E7E34 /* OpenRUM in Frameworks */,
+				F856A1EC2BD6985F004E7E34 /* AlibabaCloudRUM in Frameworks */,
 				F8359F492BCCFBA80047B0DD /* OpenRUM in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -104,6 +108,8 @@
 			name = SwiftPMSample;
 			packageProductDependencies = (
 				F8359F482BCCFBA80047B0DD /* OpenRUM */,
+				F856A1EB2BD6985F004E7E34 /* AlibabaCloudRUM */,
+				F856A1ED2BD6985F004E7E34 /* OpenRUM */,
 			);
 			productName = SwiftPMSample;
 			productReference = F8C2F4732BC9260400921B34 /* SwiftPMSample.app */;
@@ -134,7 +140,7 @@
 			);
 			mainGroup = F8C2F46A2BC9260400921B34;
 			packageReferences = (
-				F8359F472BCCFBA80047B0DD /* XCLocalSwiftPackageReference "../.." */,
+				F856A1EA2BD6985F004E7E34 /* XCLocalSwiftPackageReference "../.." */,
 			);
 			productRefGroup = F8C2F4742BC9260400921B34 /* Products */;
 			projectDirPath = "";
@@ -373,7 +379,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		F8359F472BCCFBA80047B0DD /* XCLocalSwiftPackageReference "../.." */ = {
+		F856A1EA2BD6985F004E7E34 /* XCLocalSwiftPackageReference "../.." */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../..;
 		};
@@ -381,6 +387,14 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		F8359F482BCCFBA80047B0DD /* OpenRUM */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OpenRUM;
+		};
+		F856A1EB2BD6985F004E7E34 /* AlibabaCloudRUM */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AlibabaCloudRUM;
+		};
+		F856A1ED2BD6985F004E7E34 /* OpenRUM */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = OpenRUM;
 		};

@@ -6,11 +6,11 @@ workspace 'AliyunRUMSDK.xcworkspace'
 target 'CocoaPodsSample' do |t|
     project 'Examples/CocoaPodsSample/CocoaPodsSample'
 
-    pod 'AliyunRUM', :path => '.'
+    pod 'AlibabaCloudRUM', :path => '.'
 end
 
-target 'SwiftPMSample' do |t|
-    project 'Examples/SwiftPMSample/SwiftPMSample'
-end
+#target 'SwiftPMSample' do |t|
+#    project 'Examples/SwiftPMSample/SwiftPMSample'
+#end
                                                             
                                                             

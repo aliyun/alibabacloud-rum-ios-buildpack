@@ -14,3 +14,53 @@
 // limitations under the License.
 
 import OpenRUM
+
+@objc
+public class AlibabaCloudRUM : NSObject {
+    private static let shared: AlibabaCloudRUM = AlibabaCloudRUM()
+    //    private let rum: OpenRUM?
+    //
+    //    public override init() {
+    //        super.init()
+    //    }
+    
+    
+    @objc(startWithAppID:)
+    public static func start(_ withAppID: String) {
+        OpenRUM.start(withAppID: withAppID)
+    }
+    
+    @objc
+    public static func setConfigAddress(_ configAddress: String) {
+        OpenRUM.setConfigAddress(configAddress)
+    }
+
+    @objc
+    public static func setAppVersion(_ appVersion: String) {
+        OpenRUM.setAppVersion(appVersion)
+    }
+
+    @objc
+    public static func setChannelID(_ channelID: String) {
+        OpenRUM.setChannelID(channelID)
+    }
+    
+    @objc
+    public static func setDeviceID(_ deviceID: String) {
+        OpenRUM.setDeviceID(deviceID)
+    }
+    
+    //    public static var deviceID : String -> {
+    //        return OpenRUM.deviceID
+    //    }
+    
+    @objc
+    public static func setUserID(_ userID: String) {
+        OpenRUM.setUserID(userID)
+    }
+    
+    @objc
+    public static func setLogFlag(_ flag: NSNumber) {
+        OpenRUM.setLogFlag(flag)
+    }
+}

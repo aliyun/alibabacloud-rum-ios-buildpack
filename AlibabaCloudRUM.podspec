@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
     s.libraries = 'z', "c++", "resolv"
     s.swift_version = "5.0"
     s.vendored_frameworks = 'Sources/OpenRUM/OpenRUM.xcframework'
-    s.source_files = 'Sources/AliyunRUM/**/*.{m,h,swift}'
+    s.source_files = 'Sources/AlibabaCloudRUM/**/*.{m,h,swift}'
     s.pod_target_xcconfig = {
         'OTHER_LDFLAGS' => '-ObjC'
     }

@@ -17,6 +17,9 @@
 #import "AppDelegate.h"
 #import "OpenRUM/OpenRUM.h"
 
+@import AlibabaCloudRUM;
+
+
 @interface AppDelegate ()
 
 @end
@@ -32,6 +35,11 @@
     [OpenRUM startWithAppID:appID];
     [OpenRUM setConfigAddress:configAddress]; //每个用户拥有不同的上报地址，具体链接可在应用设置页查看
     [OpenRUM setUserID:@"user-id"]; //初始化用户名称
+    
+    [AlibabaCloudRUM startWithAppID:appID];
+    [AlibabaCloudRUM setConfigAddress:configAddress];
+    [AlibabaCloudRUM setUserID:@"user-id"];
+    
     return YES;
 }
 

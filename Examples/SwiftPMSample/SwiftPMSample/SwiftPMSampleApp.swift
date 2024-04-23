@@ -17,6 +17,7 @@
 import SwiftUI
 import UIKit
 import OpenRUM
+import AlibabaCloudRUM
 
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -25,6 +26,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         OpenRUM.start(withAppID: "b590lhguqs@e8534034c48d3f7")
 
         OpenRUM.setUserID("tetsttt")
+        
+        AlibabaCloudRUM.start("")
+        AlibabaCloudRUM.setConfigAddress("")
+        AlibabaCloudRUM.setUserID("")
         
         
         return true
