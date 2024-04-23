@@ -4,11 +4,11 @@
 
 Pod::Spec.new do |s|
     s.name             = 'AlibabaCloudRUM'
-    s.version          = "0.1.0-beta.1"
+    s.version          = "0.1.0-beta.2"
     s.summary          = 'AlibabaCloud RUM service for iOS.'
 
     s.description      = <<-DESC
-    iOS SDK for Aliyun RUM.
+    iOS SDK for Alibaba Cloud RUM.
     https://help.aliyun.com/zh/arms/user-experience-monitoring/product-overview
     https://help.aliyun.com/zh/arms/user-experience-monitoring/access-to-ios-applications
     DESC
@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
     s.source           = { :git => 'https://github.com/aliyun/alibabacloud-rum-ios-buildpack.git', :tag => s.version.to_s }
     s.social_media_url = 'https://help.aliyun.com/zh/arms/product-overview'
 
-    s.platform     = :ios, "10.0"
+    s.platform     = :ios, "9.0"
 
     s.requires_arc  = true
     s.libraries = 'z', "c++", "resolv"
