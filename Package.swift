@@ -20,6 +20,8 @@ let package = Package(
         .target(
             name: "AlibabaCloudRUM",
             dependencies: [
+                "OpenCore",
+                "OpenBusiness",
                 "OpenRUM"
             ],
             path: "Sources/AlibabaCloudRUM",
@@ -31,6 +33,14 @@ let package = Package(
                 .linkedLibrary("c++"),
                 .linkedLibrary("resolv"),
             ]
+        ),
+        .binaryTarget(
+            name: "OpenCore",
+            path: "Sources/OpenCore/OpenCore.xcframework"
+        ),
+        .binaryTarget(
+            name: "OpenBusiness",
+            path: "Sources/OpenBusiness/OpenBusiness.xcframework"
         ),
         .binaryTarget(
             name: "OpenRUM",

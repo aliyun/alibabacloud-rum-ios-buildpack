@@ -1,6 +1,6 @@
 framework module OpenRUM {
   umbrella header "OpenRUM.h"
-
   export *
+
   module * { export * }
 }

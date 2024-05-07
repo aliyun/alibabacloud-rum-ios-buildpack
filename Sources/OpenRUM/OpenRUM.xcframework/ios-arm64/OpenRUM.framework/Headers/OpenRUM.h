@@ -1,4 +1,6 @@
 #import <Foundation/Foundation.h>
+#import <OpenRUM/ORSpan.h>
+#import <OpenCore/ORNetworking.h>
 
 #define OR_LOG_OFF      0x0         /// 关闭日志输出
 #define OR_LOG_PUBLIC   0x1         /// 输出主流程信息, default
@@ -12,10 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ORSpeedTestInfo;
 @class ORNetworkModel;
+@class ORRouteModel;
 
 @interface OpenRUM : NSObject
 
-/// 启动 SDK（Ver:7.12.0）
+/// 启动 SDK（Ver:8.11.3）
 + (void)startWithAppID:(NSString *)appID;
 
 /// 设置Config地址（请在SDK启动之前设置） 默认为公有云地址，无需设置
@@ -69,6 +72,43 @@ NS_ASSUME_NONNULL_BEGIN
 /// 持续丢帧时长（单位秒），允许的范围[1, 30]，默认5（需在SDK启动之前设置）
 + (void)setDropFrameTime:(NSInteger)time;
 
+/**
+ 设置一个block。该block用于处理探针内主动发起的请求的身份验证挑战。
+ 
+ 在实现身份验证挑战处理时，您应首先检查身份验证方法(`challenge.protectionSpace.authenticationMethod`)，以决定是自己处理身份验证挑战，还是在探针内的默认处理。如果您希望探针处理身份验证挑战，请返回`@(NSURLSessionAuthChallengePerformDefaultHandling)`。例如，在authentication method == `NSURLAuthenticationMethodServerTrust`时，您希望探针根据安全策略（security policy）来处理证书验证。
+ 
+ 如果您想自己处理跳针，则有四个选项：
+ 1. 返回`nil`，表示您**必须**自己调用completionHandler。
+ 2. 返回一个`NSError`对象。您**不得**调用completionHandler，返回的错误对象会在任务的completionHandler中体现。
+ 3. 返回一个`NSURLCredential`。您**不得**调用completionHandler，返回的凭证用于满足挑战。
+ 4. 返回一个包装`NSURLSessionAuthChallengeDisposition`的`NSNumber`对象，支持的值有`@(NSURLSessionAuthChallengePerformDefaultHandling)`, `@(NSURLSessionAuthChallengeCancelAuthenticationChallenge)` 和 `@(NSURLSessionAuthChallengeRejectProtectionSpace)`。您**不得**调用completionHandler。
+ 
+ 如果您返回其他内容，将抛出一个异常。
+ 
+ @note 需在探针启动前调用
+ */
++ (void)setAuthenticationChallengeHandler:(id (^)(NSURLSession *session, NSURLSessionTask *task, NSURLAuthenticationChallenge *challenge, void (^completionHandler)(NSURLSessionAuthChallengeDisposition , NSURLCredential * _Nullable)))authenticationChallengeHandler;
+
+
+/// 设置一个安全策略，用于评估安全连接的服务器信任。探针内默认使用`defaultPolicy`。
+///
+/// @note 需在探针启动前调用
++ (void)setSecurityPolicy:(ORSecurityPolicy *)securityPolicy;
+
+/// 设置敏感的控件类型
+/// @param classes 设置为敏感的控件类型，例：UIView.class
+/// 支持类型(及子类)：UIView,UIBarButtonItem,UIAlertAction,UIAlertView,UIActionSheet
++ (void)setViewSensitiveClasses:(NSArray<Class> *)classes;
+
+#pragma mark - Span
+
+/// 创建span
+/// - Parameters:
+///   - name: span名称，不能为空，长度限制256，超过截取。允许数字、字母、冒号、空格、斜杠、下划线、连字符、英文句号、@
+///   - type: span类型，不能为空，长度限制256，超过截取。允许数字、字母、冒号、空格、斜杠、下划线、连字符、英文句号、@
+/// - Returns: 成功开始子span时，返回子pan。否则返回nil
++ (nullable id<ORSpan>)startSpanWithName:(NSString *)name type:(NSString *)type;
+
 #pragma mark - 自定义接口
 
 /// 自定义异常收集
@@ -78,6 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setCustomExceptionWithType:(NSString *)exceptionType
                            causeBy:(NSString * _Nullable)causedBy
                          errorDump:(NSString * _Nullable)errorDump;
+
 /// 自定义方法开始
 /// @param methodName 方法名
 + (void)setCustomMethodStartWithName:(NSString *)methodName;
@@ -100,6 +141,29 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param speedTestInfo 测速信息集合
 + (void)setCustomSpeedTestWithIP:(NSString *)ip
                    speedTestInfo:(NSArray<ORSpeedTestInfo *> *)speedTestInfo;
+
+/**
+ 授权接口可随时调用,开启或关闭授权.
+ 授权状态仅单次应用生命周期内有效.
+*/
+
+/// 设置路由信息接口
+/// @param routeModel 自定义路由模型
++ (void)reportRouteChange:(ORRouteModel *)routeModel;
+
+/// 崩溃上报接口
+/// @param time 发生时间
+/// @param platformType 平台类型[1:Native,3:ReactNative,4:Flutter,5:Weex]
+/// @param causeby 原因
+/// @param type 崩溃类型
+/// @param dump 崩溃堆栈
+/// @param isFatal 退出应用是不是自定义异常
++ (void)reportCrashWithTime:(long long)time
+               platformType:(int)platformType
+                    causeby:(NSString *)causeby
+                       type:(NSString *)type
+                       dump:(NSString *)dump
+                    isFatal:(BOOL)isFatal;
 
 #pragma mark - React Native交互接口
 /* 以下接口为React Native插件交互接口,请勿主动调用! */
@@ -137,10 +201,48 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param causeby 原因
 /// @param type 崩溃类型
 /// @param dump 崩溃堆栈
+/// @param pageType 所在页面类型，1为Bundle(首页)，2为路由页
+/// @param bundleTag Tag
+/// @param anchorID RN事件关联ID
+/// @param routeName 路由名称
 + (void)reportCrashWithTime:(long long)time
                     causeby:(NSString *)causeby
                        type:(NSString *)type
-                       dump:(NSString *)dump;
+                       dump:(NSString *)dump
+                   pageType:(int)pageType
+                  bundleTag:(NSNumber *)bundleTag
+                   anchorID:(NSString *)anchorID
+                  routeName:(NSString *)routeName;
+
+/// React Native Bundle路由上报接口
+/// @param bundleTag Tag
+/// @param routeID 路由ID
+/// @param routeName 路由名称
+/// @param routeTime 路由加载耗时
+/// @param time 路由发生时间
++ (void)reportRNRouteChangeWithBundleTag:(NSNumber *)bundleTag
+                                 routeID:(NSString *)routeID
+                               routeName:(NSString *)routeName
+                               routeTime:(long long)routeTime
+                                    time:(long long)time;
+
+/// React Native Bundle开始加载
+/// @param bundleName Bundle名称
+/// @param moduleName Module名称
++ (void)reportBundleStartLoadWithBundle:(NSString *)bundleName
+                             moduleName:(NSString *)moduleName;
+
+/// React Native Bundle中JS完成加载
+/// @param bundleName Bundle名称
++ (void)reportBundleJSFinishLoadWithBundle:(NSString *)bundleName;
+
+/// React Native Bundle视图出现
+/// @param rootTag bundle对应tag
+/// @param moduleName Module名称
+/// @param time 时间
++ (void)reportBundleViewAppearTag:(NSNumber *)rootTag
+                       moduleName:(NSString *)moduleName
+                             time:(int64_t)time;
 
 //获取端到端打通配置
 + (NSDictionary *)networkTraceConfig;
@@ -187,7 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-///Flutter网络接口对象
+///自定义网络接口对象定义
 @interface ORNetworkModel : NSObject
 
 @property (nonatomic, copy)   NSString *requestUrl; //请求地址「必传」
@@ -214,6 +316,23 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSNumber *errorCode;    //错误码
 @property (nonatomic, copy, nullable)   NSString *errorMessage; //错误信息「非错误请求请勿赋值」
 @property (nonatomic, strong, nullable) NSNumber *errorOccurrentprocess;//错误过程「1:SSL过程，2:DNS过程，3:TCP过程，4:其他过程」
+
+@end
+
+///自定义路由接口对象定义
+@interface ORRouteModel : NSObject
+
+@property (nonatomic, copy) NSString *toUrl;                //目标路由
+@property (nonatomic, copy) NSString *fromUrl;              //来源路由
+@property (nonatomic, assign) NSInteger time;               //开始时间戳 「单位:us」
+@property (nonatomic, assign) NSInteger duration;           //路由切换耗时
+@property (nonatomic, assign) int status;                   //切换路由状态 0 正常 2异常
+@property (nonatomic, copy) NSString *path;                 //当前路由子路径
+@property (nonatomic, copy) NSString *root;                 //路由全量地址
+@property (nonatomic, copy) NSString *pageUrl;              //主页面地址
+@property (nonatomic, copy) NSString *frameworkName;        //框架名称vue rect angular
+@property (nonatomic, copy, nullable) NSString *alias;      //路由地址名称 非必要
+@property (nonatomic, assign) BOOL isCustom;                //是否为自定义
 
 @end
 

@@ -1,0 +1,6 @@
+framework module OpenCore {
+  umbrella header "OpenCore.h"
+  export *
+
+  module * { export * }
+}
