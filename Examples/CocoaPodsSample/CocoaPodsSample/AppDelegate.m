@@ -15,8 +15,8 @@
 	
 
 #import "AppDelegate.h"
-#import "OpenRUM/OpenRUM.h"
 
+// 导入Alibaba Cloud RUM 模块
 @import AlibabaCloudRUM;
 
 
@@ -29,17 +29,28 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    NSString *appID = @"*******";
-    NSString *configAddress = @"********";
+    NSString *appID = @"";
+    NSString *configAddress = @"";
     
-    [OpenRUM startWithAppID:appID];
-    [OpenRUM setConfigAddress:configAddress]; //每个用户拥有不同的上报地址，具体链接可在应用设置页查看
-    [OpenRUM setUserID:@"user-id"]; //初始化用户名称
+    // （可选）设置用户名称，可在任何实际调用，重复调用时只生效最后一次调用时传入的数值。
+    // 传入的用户名称需要满足以下正则表达式，否则设置失败：
+    // ^[:0-9a-zA-Z /@._-]{1,}$
+    [AlibabaCloudRUM setUserName:@"user-name"];
     
-    [AlibabaCloudRUM startWithAppID:appID];
+    // （可选）设置 App 版本号
+    [AlibabaCloudRUM setAppVersion:@"0.2.0"];
+    // （可选）设置 渠道ID
+    [AlibabaCloudRUM setChannelID:@"official"];
+    // （可选）设置日志等级，建议仅在debug模式下开启
+    [AlibabaCloudRUM setLogFlag:@0xffffffff];
+
+    // （必须）设置Config地址
     [AlibabaCloudRUM setConfigAddress:configAddress];
-    [AlibabaCloudRUM setUserID:@"user-id"];
+    // （必须）要在调用 startWithAppID 之前配置好其他参数
+    [AlibabaCloudRUM startWithAppID:appID];
     
+    // （可选）获取SDK提供的deviceID
+    NSLog(@"RUM deviceID: %@", AlibabaCloudRUM.deviceID);
     return YES;
 }
 
