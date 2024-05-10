@@ -50,12 +50,15 @@ public class AlibabaCloudRUM : NSObject {
         OpenRUM.setDeviceID(deviceID)
     }
     
-    //    public static var deviceID : String -> {
-    //        return OpenRUM.deviceID
-    //    }
+    @objc
+    public static var deviceID : String {
+        get {
+            return OpenRUM.deviceID()
+        }
+    }
     
     @objc
-    public static func setUserID(_ userID: String) {
+    public static func setUserName(_ userID: String) {
         OpenRUM.setUserID(userID)
     }
     
