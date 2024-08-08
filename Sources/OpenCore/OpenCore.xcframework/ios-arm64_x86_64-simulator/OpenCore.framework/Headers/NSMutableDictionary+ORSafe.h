@@ -8,8 +8,11 @@
 - (void)removeAllObjectsSafe;
 - (void)removeObjectsForKeysSafe:(NSArray<id> *)keyArray;
 - (void)setDictionarySafe:(NSDictionary<id, id> *)otherDictionary;
+- (void)addEntriesFromDictionarySafe:(NSDictionary *)otherDictionary;
 - (id)objectForKeySafe:(id)aKey;
 - (NSArray *)allValuesSafe;
+
+- (NSDictionary *)copySafe;
 
 - (dispatch_semaphore_t)semaphoreLock;
 

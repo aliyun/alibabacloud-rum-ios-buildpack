@@ -1,5 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <OpenRUM/ORSpan.h>
+#import <OpenRUM/ORViewControllerCustomizable.h>
+#import <OpenRUM/UIView+ORSensitive.h>
+#import <OpenRUM/UIView+ORExternalExt.h>
 #import <OpenCore/ORNetworking.h>
 
 #define OR_LOG_OFF      0x0         /// 关闭日志输出
@@ -12,18 +15,39 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// 应用环境类型
+typedef NS_ENUM(NSInteger, ORAppEnvironment) {
+    /// 无环境
+    ORAppEnvironmentNone = 0,
+    /// Prod线上环境
+    ORAppEnvironmentProd,
+    /// Gray灰度环境
+    ORAppEnvironmentGray,
+    /// Pre预发布环境
+    ORAppEnvironmentPre,
+    /// Daily日常环境
+    ORAppEnvironmentDaily,
+    /// Local本地环境
+    ORAppEnvironmentLocal
+};
+
 @class ORSpeedTestInfo;
 @class ORNetworkModel;
 @class ORRouteModel;
+@class WKWebView;
 
 @interface OpenRUM : NSObject
 
-/// 启动 SDK（Ver:8.11.100）
+/// 启动 SDK（Ver:8.14.0）
 + (void)startWithAppID:(NSString *)appID;
 
 /// 设置Config地址（请在SDK启动之前设置） 默认为公有云地址，无需设置
 /// @param configAddress 私有云Config地址
 + (void)setConfigAddress:(NSString *)configAddress;
+
+/// 设置应用环境（请在SDK启动之前设置） 默认为 无环境
+/// @param environment 应用环境
++ (void)setAppEnvironment:(ORAppEnvironment)environment;
 
 /// 设置app版本（请在SDK启动之前设置） 默认获取应用CFBundleShortVersionString
 + (void)setAppVersion:(NSString *)appVersion;
@@ -46,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
  [OpenRUM setLogFlag:@(OR_LOG_PUBLIC|OR_LOG_PBDATA)];
  
  若需要通过iTunes导出log文件,应在程序的Info.plist文件中添加Application supports iTunes file sharing键，并将键值设置为YES.
- 日志文件保存在沙盒目录 Documents/OpenRUM/Log 下.
+ 日志文件保存在沙盒目录 Documents/SDK/Log 下.
  
  例:打开OR_LOG_PBDATA日志且写到文件中
  [OpenRUM setLogFlag:@(OR_LOG_PUBLIC|OR_LOG_PBDATA|OR_LOG_TO_FILE)];
@@ -61,8 +85,38 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)stopSDK;
 
+/// 推迟执行探针内的耗时任务（放弃应用启动后一段时间内的部分数据采集，对应用行为没有影响）
+///
+/// @note 需在探针启动前调用
++ (void)delayExecuteHeavyTask;
+
 /**禁止网络模块采集cname*/
 + (void)disableCnameCollection;
+
+/// 禁止swizzle类中的某个方法
+///
+/// 可以传递普通类和元类。禁止传入动态注册的类
+///
+/// @note 需在探针启动前调用。**请谨慎使用**
++ (void)disableSwizzleMethod:(SEL)selector inClass:(Class)clz;
+
+/// 禁止检查某个类
+/// @note 需在探针启动前调用。**请谨慎使用**
++ (void)disableInspectClass:(NSString *)className;
+
+/// 允许捕获NSException子类的异常
+/// @note 需在探针启动前调用。
++ (void)enableCatchNSExceptionSubClasses;
+
+/// 禁止通过iOS探针注入web探针
++ (void)disableWebAgentInjection;
+
+/// 设置web探针的本地绝对路径
+/// - Parameter path: web探针的本地路径
+///
+/// 设置路径后，路径对应的文件存在时，文件内容将被用作web探针。
+/// 若路径对应的文件不存在，将使用内置的JS探针。
++ (void)useWebAgentWithLocalPath:(NSString *)path;
 
 /// 标识使用自定义冷启动结束时间（需在SDK启动之前设置）
 + (void)useCustomLaunch:(BOOL)used;
@@ -100,13 +154,46 @@ NS_ASSUME_NONNULL_BEGIN
 /// 支持类型(及子类)：UIView,UIBarButtonItem,UIAlertAction,UIAlertView,UIActionSheet
 + (void)setViewSensitiveClasses:(NSArray<Class> *)classes;
 
+#pragma mark - 事件公共属性
+
+/// 添加事件公共属性
+/// @param attributes 公共属性。kv中的key限制为NSString类型，且字符串长度大于0、小于等于256，否则key无效。kv中的value限制为NSString、NSDate、NSNumber类型，当为NSString时，其长度大于0、小于512，超过截取。有效的kv数量超过64时，仅取64个。
+/// @param local attributes是否需要持久化到本地
+/// @discussion 持久化到本地的公共属性，在下次应用启动时立即生效。
++ (void)addEventAttributes:(NSDictionary<NSString *, id> *)attributes local:(BOOL)local;
+
+/// 添加事件公共属性
+/// @param key 公共属性名，限制同addEventAttributes:
+/// @param value 公共属性值，限制同addEventAttributes:
+/// @param local 该属性是否持久化到本地。
+/// @discussion 持久化到本地的公共属性，在下次应用启动时立即生效。
++ (void)addEventAttributeWithKey:(NSString *)key value:(id)value local:(BOOL)local;
+
+/// 移除事件公共属性
+/// @discussion 同时移除内存中和本地的属性
++ (void)removeEventAttributeWithKeys:(NSArray<NSString *> *)keys;
+
+/// 移除所有事件公共属性
+/// @discussion 同时移除内存中和本地的属性
++ (void)removeAllEventAttributes;
+
+# pragma mark - PDF录制
+
+/// 设置WebView中是否存在PDF[会话回放]
+/// @param isPDFWebView YES:查找PDF内容，找到则录制 NO:忽略PDF内容
++ (void)setHavePDFWebView:(BOOL)isPDFWebView;
+
+/// 设置包含PDF的WebView[会话回放]
+/// @param webView 包含PDF的WebView，如果存在多个WebView,需指明包含PDF的WebView,否则无法捕获正确的内容
++ (void)setPDFWebView:(WKWebView *)webView;
+
 #pragma mark - Span
 
 /// 创建span
 /// - Parameters:
 ///   - name: span名称，不能为空，长度限制256，超过截取。允许数字、字母、冒号、空格、斜杠、下划线、连字符、英文句号、@
 ///   - type: span类型，不能为空，长度限制256，超过截取。允许数字、字母、冒号、空格、斜杠、下划线、连字符、英文句号、@
-/// - Returns: 成功开始子span时，返回子pan。否则返回nil
+/// - Returns: 成功开始span时，返回pan。否则返回nil
 + (nullable id<ORSpan>)startSpanWithName:(NSString *)name type:(NSString *)type;
 
 #pragma mark - 自定义接口
@@ -118,6 +205,136 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setCustomExceptionWithType:(NSString *)exceptionType
                            causeBy:(NSString * _Nullable)causedBy
                          errorDump:(NSString * _Nullable)errorDump;
+ 
+/// 自定义事件(精简)
+/// @param eventID 事件ID
+/// @param eventName 事件名称
++ (void)setCustomEventWithID:(NSString *)eventID
+                        name:(nullable NSString *)eventName;
+/// 自定义事件(精简)
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param eventLabel 事件标签
++ (void)setCustomEventWithID:(NSString *)eventID
+                        name:(nullable NSString *)eventName
+                       label:(nullable NSString *)eventLabel;
+/// 自定义事件(精简)
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param param 事件附加信息
++ (void)setCustomEventWithID:(NSString *)eventID
+                        name:(nullable NSString *)eventName
+                       param:(nullable NSString *)param;
+/// 自定义事件(精简)
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param eventLabel 事件标签
+/// @param param 事件附加信息
++ (void)setCustomEventWithID:(NSString *)eventID
+                        name:(nullable NSString *)eventName
+                       label:(nullable NSString *)eventLabel
+                       param:(nullable NSString *)param;
+
+/// 自定义事件(精简)
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param eventLabel 事件标签
+/// @param param 事件附加信息
+/// @param info 事件信息
++ (void)setCustomEventWithID:(NSString *)eventID
+                        name:(nullable NSString *)eventName
+                       label:(nullable NSString *)eventLabel
+                       param:(nullable NSString *)param
+                        info:(nullable NSDictionary<NSString *, NSString *> *)info;
+
+/// 自定义事件开始
+/// @param eventID 事件ID
+/// @param eventName 事件名称
++ (void)setCustomEventStartWithID:(NSString *)eventID
+                             name:(nullable NSString *)eventName;
+/// 自定义事件开始
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param eventLabel 事件标签
++ (void)setCustomEventStartWithID:(NSString *)eventID
+                             name:(nullable NSString *)eventName
+                            label:(nullable NSString *)eventLabel;
+/// 自定义事件开始
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param eventLabel 事件标签
+/// @param param 事件附加信息
++ (void)setCustomEventStartWithID:(NSString *)eventID
+                             name:(nullable NSString *)eventName
+                            label:(nullable NSString *)eventLabel
+                            param:(nullable NSString *)param;
+
+/// 自定义事件开始
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param eventLabel 事件标签
+/// @param param 事件附加信息
+/// @param info  附加信息
++ (void)setCustomEventStartWithID:(NSString *)eventID
+                             name:(nullable NSString *)eventName
+                            label:(nullable NSString *)eventLabel
+                            param:(nullable NSString *)param
+                             info:(nullable NSDictionary<NSString *, NSString *> *)info;
+
+/// 自定义事件结束
+/// @param eventID 事件ID
+/// @param eventName 事件名称
++ (void)setCustomEventEndWithID:(NSString *)eventID
+                           name:(nullable NSString *)eventName;
+/// 自定义事件结束
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param eventLabel 事件标签
++ (void)setCustomEventEndWithID:(NSString *)eventID
+                           name:(nullable NSString *)eventName
+                          label:(nullable NSString *)eventLabel;
+/// 自定义事件结束
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param eventLabel 事件标签
+/// @param param 事件附加信息
++ (void)setCustomEventEndWithID:(NSString *)eventID
+                           name:(nullable NSString *)eventName
+                          label:(nullable NSString *)eventLabel
+                          param:(nullable NSString *)param;
+
+/// 自定义事件结束
+/// @param eventID 事件ID
+/// @param eventName 事件名称
+/// @param eventLabel 事件标签
+/// @param param 事件附加信息
+/// @param info  附加信息
++ (void)setCustomEventEndWithID:(NSString *)eventID
+                           name:(nullable NSString *)eventName
+                          label:(nullable NSString *)eventLabel
+                          param:(nullable NSString *)param
+                           info:(nullable NSDictionary<NSString *, NSString *> *)info;
+/// 自定义日志
+/// @param logInfo 日志信息
++ (void)setCustomLog:(NSString *)logInfo;
+/// 自定义日志
+/// @param logInfo 日志信息
+/// @param param 日志附加信息
++ (void)setCustomLog:(NSString *)logInfo
+               param:(nullable NSString *)param;
+
+/// 自定义指标
+/// @param metricName 指标名称
+/// @param metricValue 指标值
++ (void)setCustomMetricWithName:(NSString *)metricName
+                          value:(NSInteger)metricValue;
+/// 自定义指标
+/// @param metricName 指标名称
+/// @param metricValue 指标值（整型）
+/// @param param 指标附加信息
++ (void)setCustomMetricWithName:(NSString *)metricName
+                          value:(NSInteger)metricValue
+                          param:(nullable NSString *)param;
 
 /// 自定义方法开始
 /// @param methodName 方法名
@@ -141,6 +358,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param speedTestInfo 测速信息集合
 + (void)setCustomSpeedTestWithIP:(NSString *)ip
                    speedTestInfo:(NSArray<ORSpeedTestInfo *> *)speedTestInfo;
+
+/// 设置请求信息接口
+/// @param headerKey 请求头中对应的键
+/// @param value 需要匹配的value值
+/// @param info 设置的请求信息
++ (void)setRquestExtraInfoWithHeaderKey:(nonnull NSString *)headerKey value:(nonnull NSString *)value info:(nullable NSString *)info;
 
 /**
  授权接口可随时调用,开启或关闭授权.
