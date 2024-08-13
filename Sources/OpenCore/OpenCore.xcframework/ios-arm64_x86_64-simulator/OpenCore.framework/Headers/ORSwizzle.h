@@ -1,6 +1,13 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
+// MARK: - Swizzle Filter
+
+void orDisableSwizzleInstanceMethodInClass(Class clz);
+void orDisableSwizzleMethodInClass(SEL sel, Class clz);
+
+// MARK: - Swizzle
+
 /**
  指向被交换的方法的原始实现的函数指针类型
  */
