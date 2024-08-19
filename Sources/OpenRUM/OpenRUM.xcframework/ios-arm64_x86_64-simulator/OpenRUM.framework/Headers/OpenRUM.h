@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, ORAppEnvironment) {
 
 @interface OpenRUM : NSObject
 
-/// 启动 SDK（Ver:8.14.0）
+/// 启动 SDK（Ver:8.14.100）
 + (void)startWithAppID:(NSString *)appID;
 
 /// 设置Config地址（请在SDK启动之前设置） 默认为公有云地址，无需设置
@@ -62,6 +62,19 @@ typedef NS_ENUM(NSInteger, ORAppEnvironment) {
 
 /// 设置用户ID
 + (void)setUserID:(nullable NSString *)userID;
+
+/// 设置附加信息
+/// @param extraInfo 附加信息为Key-Value形式，Value限制NSString或NSNumber类型
++ (void)setExtraInfo:(nullable NSDictionary <NSString *, id>*)extraInfo __attribute__((deprecated(" Use setUserExtraInfo: instead.")));
+
+/// 设置用户附加信息（在已设置userID的情况下调用）
+///
+/// key限制为NSString类型，且字符串长度大于0、小于等于256，否则key无效。
+///
+/// value限制为NSString、NSDate、NSNumber类型，当为NSString时，其长度大于0、小于512，超过截取。
+///
+/// 有效的kv数量超过64时，仅取64个。
++ (void)setUserExtraInfo:(NSDictionary<NSString *, id>*)extraInfo;
 
 /**
  打开日志标志（默认只打开OR_LOG_PUBLIC日志。此接口调试时调用，请勿在生产环境调用。）
@@ -153,29 +166,6 @@ typedef NS_ENUM(NSInteger, ORAppEnvironment) {
 /// @param classes 设置为敏感的控件类型，例：UIView.class
 /// 支持类型(及子类)：UIView,UIBarButtonItem,UIAlertAction,UIAlertView,UIActionSheet
 + (void)setViewSensitiveClasses:(NSArray<Class> *)classes;
-
-#pragma mark - 事件公共属性
-
-/// 添加事件公共属性
-/// @param attributes 公共属性。kv中的key限制为NSString类型，且字符串长度大于0、小于等于256，否则key无效。kv中的value限制为NSString、NSDate、NSNumber类型，当为NSString时，其长度大于0、小于512，超过截取。有效的kv数量超过64时，仅取64个。
-/// @param local attributes是否需要持久化到本地
-/// @discussion 持久化到本地的公共属性，在下次应用启动时立即生效。
-+ (void)addEventAttributes:(NSDictionary<NSString *, id> *)attributes local:(BOOL)local;
-
-/// 添加事件公共属性
-/// @param key 公共属性名，限制同addEventAttributes:
-/// @param value 公共属性值，限制同addEventAttributes:
-/// @param local 该属性是否持久化到本地。
-/// @discussion 持久化到本地的公共属性，在下次应用启动时立即生效。
-+ (void)addEventAttributeWithKey:(NSString *)key value:(id)value local:(BOOL)local;
-
-/// 移除事件公共属性
-/// @discussion 同时移除内存中和本地的属性
-+ (void)removeEventAttributeWithKeys:(NSArray<NSString *> *)keys;
-
-/// 移除所有事件公共属性
-/// @discussion 同时移除内存中和本地的属性
-+ (void)removeAllEventAttributes;
 
 # pragma mark - PDF录制
 
@@ -364,11 +354,6 @@ typedef NS_ENUM(NSInteger, ORAppEnvironment) {
 /// @param value 需要匹配的value值
 /// @param info 设置的请求信息
 + (void)setRquestExtraInfoWithHeaderKey:(nonnull NSString *)headerKey value:(nonnull NSString *)value info:(nullable NSString *)info;
-
-/**
- 授权接口可随时调用,开启或关闭授权.
- 授权状态仅单次应用生命周期内有效.
-*/
 
 /// 设置路由信息接口
 /// @param routeModel 自定义路由模型
