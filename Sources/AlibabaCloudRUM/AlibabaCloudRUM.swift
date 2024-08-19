@@ -240,7 +240,7 @@ public class AlibabaCloudRUM : NSObject {
         }
         
         do {
-            let info = try JSONSerialization.data(withJSONObject: extra, options: .sortedKeys)
+            let info = try JSONSerialization.data(withJSONObject: extra, options: [])
             OpenRUM.setCustomLog(String(data: info, encoding: .utf8)!, param: snapshots)
         } catch {
             return
