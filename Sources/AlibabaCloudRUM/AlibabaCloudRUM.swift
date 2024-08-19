@@ -118,53 +118,132 @@ public class AlibabaCloudRUM : NSObject {
         OpenRUM.setUserID(userID)
     }
     
+    @objc(setUserExtraInfo:)
+    public static func setUserExtraInfo(_ extraInfo: [String: AnyObject]) {
+        OpenRUM.setExtraInfo(extraInfo)
+    }
+    
     @objc
     public static func setLogFlag(_ flag: NSNumber) {
         OpenRUM.setLogFlag(flag)
     }
     
-    @objc(setCustomException:causeBy:errorDump:)
-    public static func setCustomException(_ exceptionType: String, _ causeBy: String, _ errorDump: String) {
-        OpenRUM.setCustomExceptionWithType(exceptionType, causeBy: causeBy, errorDump: errorDump)
-    }
-    
-    @objc(setCustomMetric:value:param:)
-    public static func setCustomMetric(_ metricName: String, _ value: Int, _ param: String?) {
-        OpenRUM.setCustomMetricWithName(metricName, value: value, param: param)
-    }
-    
-    @objc(setCustomEvent:name:)
-    public static func setCustomEvent(_ eventID: String, _ name: String) {
-        self.setCustomEvent(eventID, name, nil, nil, nil)
-    }
-    
-    @objc(setCustomEvent:name:label:)
-    public static func setCustomEvent(_ eventID: String, _ name: String, _ label: String? = nil) {
-        self.setCustomEvent(eventID, name, label, nil, nil)
-    }
-    
-    @objc(setCustomEvent:name:label:param:)
-    public static func setCustomEvent(_ eventID: String, _ name: String, _ label: String? = nil, _ param: String? = nil) {
-        self.setCustomEvent(eventID, name, label, param, nil)
-    }
-    
-    @objc(setCustomEvent:name:label:param:info:)
-    public static func setCustomEvent(_ eventID: String, _ name: String, _ label: String? = nil, _ param: String? = nil, _ info: [String: String]? = nil) {
-        OpenRUM.setCustomEventWithID(eventID, name: name, label: label, param: param, info: info)
-    }
-    
-    @objc(setCustomLog:)
-    public static func setCustomLog(_ logInfo: String) {
-        OpenRUM.setCustomLog(logInfo, param: "")
-    }
-    
-    @objc(setCustomLog:param:)
-    public static func setCustomLog(_ logInfo: String, _ param: String? = "") {
-        OpenRUM.setCustomLog(logInfo, param: param)
-    }
-    
     @objc
     public static func stopSDK() {
         OpenRUM.stopSDK()
+    }
+    
+    // MARK: ===== exception =====
+    @objc(setCustomException:causeBy:errorDump:)
+    public static func setCustomException(_ exceptionType: String, causeBy: String, errorDump: String) {
+        OpenRUM.setCustomExceptionWithType(exceptionType, causeBy: causeBy, errorDump: errorDump)
+    }
+    
+    // MARK: ===== metric =====
+    @objc(setCustomMetric:value:param:)
+    public static func setCustomMetric(_ metricName: String, value: Int, snapshots: String?) {
+        OpenRUM.setCustomMetricWithName(metricName, value: value, param: snapshots)
+    }
+    
+    // MARK: ===== event =====
+    @objc(setCustomEvent:)
+    public static func setCustomEvent(_ name: String) {
+        self.setCustomEvent(name, group: nil)
+    }
+    
+    @objc(setCustomEvent:group:)
+    public static func setCustomEvent(_ name: String, group: String? = nil) {
+        self.setCustomEvent(name, group: group, snapshots: nil)
+    }
+    
+    @objc(setCustomEvent:group:snapshots:)
+    public static func setCustomEvent(_ name: String, group: String? = nil, snapshots: String? = nil) {
+        self.setCustomEvent(name, group: group, snapshots: snapshots, value: 0)
+    }
+    
+    @objc(setCustomEvent:group:value:)
+    public static func setCustomEvent(_ name: String, group: String? = nil, value: Double = 0) {
+        self.setCustomEvent(name, group: group, snapshots: nil, value: value)
+    }
+    
+    @objc(setCustomEvent:group:info:)
+    public static func setCustomEvent(_ name: String, group: String? = nil, info: [String: String]? = nil) {
+        self.setCustomEvent(name, group: group, snapshots: nil, info: info)
+    }
+    
+    @objc(setCustomEvent:group:snapshots:value:)
+    public static func setCustomEvent(_ name: String, group: String? = nil, snapshots: String? = nil, value: Double = 0) {
+        self.setCustomEvent(name, group: group, snapshots: snapshots, value: value, info: nil)
+    }
+    
+    @objc(setCustomEvent:group:snapshots:info:)
+    public static func setCustomEvent(_ name: String, group: String? = nil, snapshots: String? = nil, info: [String: String]? = nil) {
+        self.setCustomEvent(name, group: group, snapshots: snapshots, value: 0, info: info)
+    }
+    
+    @objc(setCustomEvent:group:value:info:)
+    public static func setCustomEvent(_ name: String, group: String? = nil, value: Double = 0, info: [String: String]? = nil) {
+        self.setCustomEvent(name, group: group, snapshots: nil, value: value, info: info)
+    }
+    
+    @objc(setCustomEvent:group:snapshots:value:info:)
+    public static func setCustomEvent(_ name: String, group: String? = nil, snapshots: String? = nil, value: Double = 0, info: [String: String]? = nil) {
+        var extra: [String: String]
+        if let _ = info {
+            extra = info!
+        } else {
+            extra = [String: String]()
+        }
+        
+        extra["_orcv"] = String(value)
+        
+        OpenRUM.setCustomEventWithID(UUID().uuidString, name: name, label: group, param: snapshots, info: extra)
+    }
+    
+    // MARK: ===== log =====
+    @objc(setCustomLog:)
+    public static func setCustomLog(_ logInfo: String) {
+        setCustomLog(logInfo, name: nil)
+    }
+    
+    @objc(setCustomLog:name:)
+    public static func setCustomLog(_ logInfo: String, name: String? = nil) {
+        setCustomLog(logInfo, name: name, snapshots: "")
+    }
+    
+    @objc(setCustomLog:name:snapshots:)
+    public static func setCustomLog(_ logInfo: String, name: String? = nil, snapshots: String? = "") {
+        setCustomLog(logInfo, name: name, snapshots: snapshots, info: nil)
+    }
+    
+    @objc(setCustomLog:name:snapshots:level:info:)
+    public static func setCustomLog(_ logInfo: String, name: String? = nil, snapshots: String? = "", level: String? = "INFO", info: [String: String]? = nil) {
+        var extra : [String: String]
+        if let _ = info {
+            extra = info!
+        } else {
+            extra = [String: String]()
+        }
+        
+        if let _ = level {
+            extra["_ll"] = level
+        } else {
+            extra["_ll"] = "INFO"
+        }
+        
+        if let _ = name {
+            extra["_ln"] = name
+        }
+        
+        if let _ = level {
+            extra["_lc"] = logInfo
+        }
+        
+        do {
+            let info = try JSONSerialization.data(withJSONObject: extra, options: .sortedKeys)
+            OpenRUM.setCustomLog(String(data: info, encoding: .utf8)!, param: snapshots)
+        } catch {
+            return
+        }
     }
 }
