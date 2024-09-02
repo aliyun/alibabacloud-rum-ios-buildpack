@@ -62,6 +62,7 @@ public class AlibabaCloudRUM : NSObject {
     @objc
     public static func setConfigAddress(_ configAddress: String) {
         OpenRUM.setConfigAddress(configAddress)
+        OpenRUM.setAppEnvironment(ORAppEnvironment.prod)
     }
     
     @objc
