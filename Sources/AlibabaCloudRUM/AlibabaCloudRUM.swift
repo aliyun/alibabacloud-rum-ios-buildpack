@@ -62,7 +62,6 @@ public class AlibabaCloudRUM : NSObject {
     @objc
     public static func setConfigAddress(_ configAddress: String) {
         OpenRUM.setConfigAddress(configAddress)
-        OpenRUM.setAppEnvironment(ORAppEnvironment.prod)
     }
     
     @objc
@@ -235,9 +234,7 @@ public class AlibabaCloudRUM : NSObject {
             extra["_ln"] = name
         }
         
-        if let _ = level {
-            extra["_lc"] = logInfo
-        }
+        extra["_lc"] = logInfo
         
         do {
             let info = try JSONSerialization.data(withJSONObject: extra, options: [])
