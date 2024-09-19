@@ -29,7 +29,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         AlibabaCloudRUM.start("")
         AlibabaCloudRUM.setConfigAddress("")
-        AlibabaCloudRUM.setUserID("")
+        AlibabaCloudRUM.setUserName("")
         
         
         return true

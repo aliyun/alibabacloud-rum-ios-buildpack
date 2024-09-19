@@ -15,21 +15,30 @@
 
 import OpenRUM
 
+@objc(AlibabaCloudEnv)
+public enum Env: Int {
+    case NONE
+    case PROD
+    case GRAY
+    case PRE
+    case DAILY
+    case LOCAL
+}
+
 @objc
 public class AlibabaCloudRUM : NSObject {
-    
-    @objc(AlibabaCloudEnv)
-    public enum Env: Int {
-        case NONE
-        case PROD
-        case GRAY
-        case PRE
-        case DAILY
-        case LOCAL
-    }
+    private static let CUSTOM_ATTRIBUTES_PREFIX = "_attr_"
+    private static let SDK_VERSION_PREFIX = "_sv_"
+//    private static let S_RUM_SDK_VERSION = Bundle(for: AlibabaCloudRUM.self).infoDictionary?["CFBundleShortVersionString"] as? String
+    private static let RUM_SDK_VERSION = "0.3.3"
     
     private static let shared: AlibabaCloudRUM = AlibabaCloudRUM()
     
+    private static var cachedExtraInfo: [String: AnyObject] = {
+        var info = [String: AnyObject]()
+        info[SDK_VERSION_PREFIX] = RUM_SDK_VERSION as AnyObject
+        return info
+    }()
     
     /// 禁止swizzle类中的某个方法
     ///
@@ -54,6 +63,7 @@ public class AlibabaCloudRUM : NSObject {
     @objc(startWithAppID:)
     public static func start(_ appID: String) {
         OpenRUM.start(withAppID: appID)
+        OpenRUM.setExtraInfo(cachedExtraInfo)
     }
     
     /// 配置config地址
@@ -118,9 +128,75 @@ public class AlibabaCloudRUM : NSObject {
         OpenRUM.setUserID(userID)
     }
     
+    @objc(setExtraInfo:)
+    public static func setExtraInfo(_ extraInfo: [String: AnyObject]) {
+        internalSetExtraInfo(extraInfo, false, false)
+    }
+    
+    @objc(addExtraInfo:)
+    public static func addExtraInfo(_ extraInfo: [String: AnyObject]) {
+        internalSetExtraInfo(extraInfo, false, true)
+    }
+    
     @objc(setUserExtraInfo:)
     public static func setUserExtraInfo(_ extraInfo: [String: AnyObject]) {
-        OpenRUM.setExtraInfo(extraInfo)
+        internalSetExtraInfo(extraInfo, true, false)
+    }
+    
+    @objc(addUserExtraInfo:)
+    public static func addUserExtraInfo(_ extraInfo: [String: AnyObject]) {
+        internalSetExtraInfo(extraInfo, true, true)
+    }
+    
+    private static func internalSetExtraInfo(_ extraInfo: [String: AnyObject]?, _ user: Bool, _ append: Bool) {
+        guard let info = extraInfo else {
+            return
+        }
+        
+        var global: [String: AnyObject] = cachedExtraInfo[CUSTOM_ATTRIBUTES_PREFIX] as? [String : AnyObject] ?? [String: AnyObject]()
+        
+        if !append {
+            var removedKeys = [String]()
+            for (key, _) in cachedExtraInfo {
+                // keep SDK_VERSION_PREFIX
+                if SDK_VERSION_PREFIX == key {
+                    continue
+                }
+                
+                if user {
+                    // in user attributes mode
+                    // remove kv if is not global attributes
+                    if CUSTOM_ATTRIBUTES_PREFIX != key {
+                        removedKeys.append(key)
+                    }
+                } else {
+                    // not in user attributes mode
+                    // remove kv if is global attributes
+                    if CUSTOM_ATTRIBUTES_PREFIX == key {
+                        global.removeAll()
+                        removedKeys.append(key)
+                    }
+                }
+            }
+            
+            for key in removedKeys {
+                cachedExtraInfo.removeValue(forKey: key)
+            }
+        }
+        
+        if user {
+            // put user extra info to root node
+            cachedExtraInfo.merge(info, uniquingKeysWith: { current, _ in current })
+        } else {
+            // put global attributes to CUSTOM_ATTRIBUTES_PREFIX node
+            global.merge(info, uniquingKeysWith: { current, _ in current })
+        }
+        
+        if !global.isEmpty {
+            cachedExtraInfo[CUSTOM_ATTRIBUTES_PREFIX] = global as AnyObject
+        }
+        
+        OpenRUM.setExtraInfo(cachedExtraInfo)
     }
     
     @objc
