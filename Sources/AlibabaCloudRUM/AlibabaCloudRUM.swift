@@ -15,22 +15,22 @@
 
 import OpenRUM
 
+@objc(AlibabaCloudEnv)
+public enum Env: Int {
+    case NONE
+    case PROD
+    case GRAY
+    case PRE
+    case DAILY
+    case LOCAL
+}
+
 @objc
 public class AlibabaCloudRUM : NSObject {
     private static let CUSTOM_ATTRIBUTES_PREFIX = "_attr_"
     private static let SDK_VERSION_PREFIX = "_sv_"
-//    private static let RUM_SDK_VERSION = Bundle(for: AlibabaCloudRUM.self).infoDictionary?["CFBundleShortVersionString"] as? String
+//    private static let S_RUM_SDK_VERSION = Bundle(for: AlibabaCloudRUM.self).infoDictionary?["CFBundleShortVersionString"] as? String
     private static let RUM_SDK_VERSION = "0.3.3"
-    
-    @objc(AlibabaCloudEnv)
-    public enum Env: Int {
-        case NONE
-        case PROD
-        case GRAY
-        case PRE
-        case DAILY
-        case LOCAL
-    }
     
     private static let shared: AlibabaCloudRUM = AlibabaCloudRUM()
     
@@ -63,6 +63,7 @@ public class AlibabaCloudRUM : NSObject {
     @objc(startWithAppID:)
     public static func start(_ appID: String) {
         OpenRUM.start(withAppID: appID)
+        OpenRUM.setExtraInfo(cachedExtraInfo)
     }
     
     /// 配置config地址
