@@ -57,6 +57,15 @@ public class AlibabaCloudRUM : NSObject {
         OpenRUM.disableInspectClass(className)
     }
     
+    /// 开启/关闭电量模块。
+    /// 默认为开启，需要在start方法调用之前设置
+    /// - Parameters:
+    ///     - enable: 是否开启
+    @objc(enableBattery:)
+    public static func enableBattery(_ enable: Bool) {
+        OpenRUM.updateLocalConfigWithBattery(on: enable)
+    }
+    
     /// 启动SDK
     /// - Parameters:
     ///     - appID: 应用ID, 必填
