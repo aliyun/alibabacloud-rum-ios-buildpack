@@ -18,7 +18,7 @@ sed -i '' "s/\(private static let RUM_SDK_VERSION = \).*/\1\"$VERSION\"/g" Sourc
 
 pushd build
 # create version readable txt file
-touch ver_$(date "+%Y%m%d_%H%M").txt
+touch ver_${VERSION}_$(date "+%Y%m%d_%H%M").txt
 popd
 
 # copy OpenRUM SDK to build directory
@@ -44,7 +44,7 @@ popd
 
 pushd build
 # zip distributable sdk
-zip -q -r AlibabaCloudRUM-iOS-$(date "+%Y%m%d_%H%M").zip *
+zip -q -r AlibabaCloudRUM-iOS-${VERSION}-$(date "+%Y%m%d_%H%M").zip *
 popd
 
 popd
