@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, ORAppEnvironment) {
 
 @interface OpenRUM : NSObject
 
-/// 启动 SDK（Ver:8.14.100）
+/// 启动 SDK（Ver:8.14.102）
 + (void)startWithAppID:(NSString *)appID;
 
 /// 设置Config地址（请在SDK启动之前设置） 默认为公有云地址，无需设置
@@ -59,6 +59,8 @@ typedef NS_ENUM(NSInteger, ORAppEnvironment) {
 + (void)setDeviceID:(NSString *)deviceID;
 /// 获取设备的deviceID
 + (NSString *)deviceID;
+
+#pragma mark - 用户信息
 
 /// 设置用户ID
 + (void)setUserID:(nullable NSString *)userID;
@@ -97,6 +99,10 @@ typedef NS_ENUM(NSInteger, ORAppEnvironment) {
 + (NSString *)SDKVersion;
 
 + (void)stopSDK;
+
+/// 更新本地配置中的电量模块开关，默认为开（请在BonreeSDK启动之前设置）
+/// @param batteryOn 电量模块开关
++ (void)updateLocalConfigWithBatteryOn:(BOOL)batteryOn;
 
 /// 推迟执行探针内的耗时任务（放弃应用启动后一段时间内的部分数据采集，对应用行为没有影响）
 ///
