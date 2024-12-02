@@ -34,6 +34,17 @@ let package = Package(
                 .linkedLibrary("resolv"),
             ]
         ),
+        .target(
+            name: "AlibabaCloudRUMBridge",
+            dependencies: [
+                "AlibabaCloudRUM"
+            ],
+            path: "Sources",
+            sources: [
+                "AlibabaCloudRUMBridge"
+            ],
+            publicHeadersPath: "AlibabaCloudRUMBridge/include"
+        ),
         .binaryTarget(
             name: "OpenCore",
             path: "Sources/OpenCore/OpenCore.xcframework"

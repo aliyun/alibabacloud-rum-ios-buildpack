@@ -25,15 +25,28 @@ public enum Env: Int {
     case LOCAL
 }
 
+@objc(AlibabaCloudFramework)
+public enum Framework: Int {
+    case FLUTTER
+    case REACT_NATIVE
+    case UNITY
+}
+
 @objc
 public class AlibabaCloudRUM : NSObject {
     private static let CUSTOM_ATTRIBUTES_PREFIX = "_attr_"
     private static let SDK_VERSION_PREFIX = "_sv_"
+    private static let SDK_FRAMEWORK = "_frmk_"
 //    private static let S_RUM_SDK_VERSION = Bundle(for: AlibabaCloudRUM.self).infoDictionary?["CFBundleShortVersionString"] as? String
-    private static let RUM_SDK_VERSION = "0.3.3"
+    private static let RUM_SDK_VERSION = "0.3.4-beta.1"
     
     private static let shared: AlibabaCloudRUM = AlibabaCloudRUM()
     
+    private override init() {
+        // default disable battery monitor
+        OpenRUM.updateLocalConfigWithBattery(on: false)
+    }
+
     private static var cachedExtraInfo: [String: AnyObject] = {
         var info = [String: AnyObject]()
         info[SDK_VERSION_PREFIX] = RUM_SDK_VERSION as AnyObject
@@ -58,7 +71,7 @@ public class AlibabaCloudRUM : NSObject {
     }
     
     /// 开启/关闭电量模块。
-    /// 默认为开启，需要在start方法调用之前设置
+    /// 默认为关闭，需要在start方法调用之前设置
     /// - Parameters:
     ///     - enable: 是否开启
     @objc(enableBattery:)
@@ -141,7 +154,7 @@ public class AlibabaCloudRUM : NSObject {
     public static func setExtraInfo(_ extraInfo: [String: AnyObject]) {
         internalSetExtraInfo(extraInfo, false, false)
     }
-    
+
     @objc(addExtraInfo:)
     public static func addExtraInfo(_ extraInfo: [String: AnyObject]) {
         internalSetExtraInfo(extraInfo, false, true)
@@ -157,11 +170,17 @@ public class AlibabaCloudRUM : NSObject {
         internalSetExtraInfo(extraInfo, true, true)
     }
     
+    @objc(setAppFramework:)
+    public static func setAppFramework(_ framework: Framework) {
+        let frmkName = frameworkDescription(framework)
+        cachedExtraInfo[SDK_FRAMEWORK] = frmkName as AnyObject
+    }
+
     private static func internalSetExtraInfo(_ extraInfo: [String: AnyObject]?, _ user: Bool, _ append: Bool) {
         guard let info = extraInfo else {
             return
         }
-        
+
         var global: [String: AnyObject] = cachedExtraInfo[CUSTOM_ATTRIBUTES_PREFIX] as? [String : AnyObject] ?? [String: AnyObject]()
         
         if !append {
@@ -172,6 +191,11 @@ public class AlibabaCloudRUM : NSObject {
                     continue
                 }
                 
+                // keep SDK_FRAMEWORK
+                if SDK_FRAMEWORK == key {
+                    continue
+                }
+
                 if user {
                     // in user attributes mode
                     // remove kv if is not global attributes
@@ -327,6 +351,19 @@ public class AlibabaCloudRUM : NSObject {
             OpenRUM.setCustomLog(String(data: info, encoding: .utf8)!, param: snapshots)
         } catch {
             return
+        }
+    }
+
+    private static func frameworkDescription(_ framework: Framework) -> String {
+        switch framework {
+        case .FLUTTER:
+            return "Flutter"
+        case .REACT_NATIVE:
+            return "ReactNative"
+        case .UNITY:
+            return "Unity"
+        default:
+            return ""
         }
     }
 }
