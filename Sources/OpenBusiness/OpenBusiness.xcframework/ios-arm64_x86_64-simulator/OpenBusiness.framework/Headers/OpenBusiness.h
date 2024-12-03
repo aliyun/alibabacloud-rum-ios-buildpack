@@ -1,6 +1,6 @@
 // OpenBusiness.h
 
-// OpenBusiness（Ver:1.2.1）
+// OpenBusiness（Ver:1.3.0）
 #import <Foundation/Foundation.h>
 
 #import <OpenBusiness/ORConfigProtocol.h>

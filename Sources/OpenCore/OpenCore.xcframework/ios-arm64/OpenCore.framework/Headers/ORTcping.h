@@ -6,7 +6,7 @@
 /// 最后一次的tcping连接耗时
 @property (nonatomic, assign, readonly) uint64_t lastTcpingTime;
 
-@property (nonatomic, copy) NSString *socketConnectAdress;
+@property (atomic, copy) NSString *socketConnectAdress;
 
 
 + (ORTcping *)sharedObj;

@@ -5,6 +5,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ORUploadModule : NSObject
 
+/// 注册Upload消息接收者
+/// @param receiver 消息接收者
+/// @param data 控制数据
++ (void)registerReceiver:(id<ORUploadReceiverProtocol>)receiver data:(id<ORUploadControlDataProtocol>)data;
+
 /// 开启Upload
 /// @param data 控制Upload的数据
 /// @param receiver 消息接收者

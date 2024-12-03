@@ -2,6 +2,7 @@
 #define ORBASELIB_H
 
 #import <UIKit/UIKit.h>
+#import <OpenCore/ORThreadTypes.h>
 
 typedef struct {
     double usage;
@@ -12,9 +13,6 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus
-    
-#import <netdb.h>
-#import <OpenCore/ORThreadTypes.h>
 
 /// 成功时返回当前线程消耗的cpu时间（微秒）；失败时返回0
 uint64_t or_getThreadClockTime() API_AVAILABLE(ios(10.0));
