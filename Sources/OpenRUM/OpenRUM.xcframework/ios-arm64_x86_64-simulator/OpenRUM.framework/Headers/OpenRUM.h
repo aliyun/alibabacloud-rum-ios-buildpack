@@ -15,39 +15,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// 应用环境类型
-typedef NS_ENUM(NSInteger, ORAppEnvironment) {
-    /// 无环境
-    ORAppEnvironmentNone = 0,
-    /// Prod线上环境
-    ORAppEnvironmentProd,
-    /// Gray灰度环境
-    ORAppEnvironmentGray,
-    /// Pre预发布环境
-    ORAppEnvironmentPre,
-    /// Daily日常环境
-    ORAppEnvironmentDaily,
-    /// Local本地环境
-    ORAppEnvironmentLocal
-};
-
 @class ORSpeedTestInfo;
 @class ORNetworkModel;
 @class ORRouteModel;
+
 @class WKWebView;
 
 @interface OpenRUM : NSObject
 
-/// 启动 SDK（Ver:8.15.100）
+/// 启动 SDK（Ver:8.17.100）
 + (void)startWithAppID:(NSString *)appID;
 
 /// 设置Config地址（请在SDK启动之前设置） 默认为公有云地址，无需设置
 /// @param configAddress 私有云Config地址
 + (void)setConfigAddress:(NSString *)configAddress;
 
-/// 设置应用环境（请在SDK启动之前设置） 默认为 无环境
+/// 设置应用环境（请在BonreeSDK启动之前设置）
 /// @param environment 应用环境
-+ (void)setAppEnvironment:(ORAppEnvironment)environment;
++ (void)setAppEnvironment:(NSString *)environment;
 
 /// 设置app版本（请在SDK启动之前设置） 默认获取应用CFBundleShortVersionString
 + (void)setAppVersion:(NSString *)appVersion;
@@ -167,6 +152,15 @@ typedef NS_ENUM(NSInteger, ORAppEnvironment) {
 ///
 /// @note 需在探针启动前调用
 + (void)setSecurityPolicy:(ORSecurityPolicy *)securityPolicy;
+
+/// 设置inteceptFilter，用于判断请求是否允许被探针内的URLProtocol拦截（需在BonreeSDK启动之前设置）
+/// @param interceptFilter 返回NO时，不允许拦截。返回YES时，允许拦截。
++ (void)setRequestInterceptFilter:(nullable BOOL (^)(NSURLRequest *))interceptFilter;
+
+/// 该接口需要在BonreeSDK启动之前调用
+/// 设置请求分组规则。同一分组的请求，使用同一个session发送请求。未分组的请求，使用单独的session。
+/// @param handler 用于确定请求的分组，参数为request，返回值为分组ID。
++ (void)setRequestGroupHandler:(nullable NSString * _Nullable (^)(NSURLRequest *request))handler;
 
 /// 设置敏感的控件类型
 /// @param classes 设置为敏感的控件类型，例：UIView.class
