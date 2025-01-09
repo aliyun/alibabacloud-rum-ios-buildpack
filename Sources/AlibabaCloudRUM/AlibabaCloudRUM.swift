@@ -94,33 +94,42 @@ public class AlibabaCloudRUM : NSObject {
     @objc
     public static func setConfigAddress(_ configAddress: String) {
         OpenRUM.setConfigAddress(configAddress)
-        OpenRUM.setAppEnvironment(ORAppEnvironment.prod)
+        OpenRUM.setAppEnvironment("prod")
     }
     
     @objc
     public static func setEnvironment(_ env: Env) {
         switch env {
         case .NONE:
-            OpenRUM.setAppEnvironment(ORAppEnvironment.none)
+            OpenRUM.setAppEnvironment("none")
             break
         case .PROD:
-            OpenRUM.setAppEnvironment(ORAppEnvironment.prod)
+            OpenRUM.setAppEnvironment("prod")
             break
         case .GRAY:
-            OpenRUM.setAppEnvironment(ORAppEnvironment.gray)
+            OpenRUM.setAppEnvironment("gray")
             break
         case .PRE:
-            OpenRUM.setAppEnvironment(ORAppEnvironment.pre)
+            OpenRUM.setAppEnvironment("pre")
             break
         case .DAILY:
-            OpenRUM.setAppEnvironment(ORAppEnvironment.daily)
+            OpenRUM.setAppEnvironment("daily")
             break
         case .LOCAL:
-            OpenRUM.setAppEnvironment(ORAppEnvironment.local)
+            OpenRUM.setAppEnvironment("local")
             break
         default:
-            OpenRUM.setAppEnvironment(ORAppEnvironment.prod)
+            OpenRUM.setAppEnvironment("prod")
         }
+    }
+    
+    @objc
+    public static func setCustomEnvironment(_ env: String?) {
+        guard let env = env else {
+            return
+        }
+        
+        OpenRUM.setAppEnvironment(env)
     }
     
     @objc
