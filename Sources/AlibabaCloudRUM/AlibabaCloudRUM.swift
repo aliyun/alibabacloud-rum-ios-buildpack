@@ -39,6 +39,7 @@ public class AlibabaCloudRUM : NSObject {
     private static let SDK_FRAMEWORK = "_frmk_"
 //    private static let S_RUM_SDK_VERSION = Bundle(for: AlibabaCloudRUM.self).infoDictionary?["CFBundleShortVersionString"] as? String
     private static let RUM_SDK_VERSION = "0.3.5-beta.1"
+    private static var env: String?
     
     private static let shared: AlibabaCloudRUM = AlibabaCloudRUM()
     
@@ -52,6 +53,18 @@ public class AlibabaCloudRUM : NSObject {
         info[SDK_VERSION_PREFIX] = RUM_SDK_VERSION as AnyObject
         return info
     }()
+    
+    private static func envToString(_ env: Env) -> String {
+        switch env {
+        case .NONE: return "none"
+        case .PROD: return "prod"
+        case .GRAY: return "gray"
+        case .PRE: return "pre"
+        case .DAILY: return "daily"
+        case .LOCAL: return "local"
+        default: return "prod"
+        }
+    }
     
     /// 禁止swizzle类中的某个方法
     ///
@@ -84,6 +97,10 @@ public class AlibabaCloudRUM : NSObject {
     ///     - appID: 应用ID, 必填
     @objc(startWithAppID:)
     public static func start(_ appID: String) {
+        if nil == self.env {
+            self.setEnvironment(.PROD)
+        }
+        
         OpenRUM.start(withAppID: appID)
         OpenRUM.setExtraInfo(cachedExtraInfo)
     }
@@ -94,33 +111,12 @@ public class AlibabaCloudRUM : NSObject {
     @objc
     public static func setConfigAddress(_ configAddress: String) {
         OpenRUM.setConfigAddress(configAddress)
-        OpenRUM.setAppEnvironment("prod")
     }
     
     @objc
     public static func setEnvironment(_ env: Env) {
-        switch env {
-        case .NONE:
-            OpenRUM.setAppEnvironment("none")
-            break
-        case .PROD:
-            OpenRUM.setAppEnvironment("prod")
-            break
-        case .GRAY:
-            OpenRUM.setAppEnvironment("gray")
-            break
-        case .PRE:
-            OpenRUM.setAppEnvironment("pre")
-            break
-        case .DAILY:
-            OpenRUM.setAppEnvironment("daily")
-            break
-        case .LOCAL:
-            OpenRUM.setAppEnvironment("local")
-            break
-        default:
-            OpenRUM.setAppEnvironment("prod")
-        }
+        self.env = envToString(env)
+        OpenRUM.setAppEnvironment(self.env!)
     }
     
     @objc
@@ -128,6 +124,7 @@ public class AlibabaCloudRUM : NSObject {
         guard let env = env else {
             return
         }
+        self.env = env
         
         OpenRUM.setAppEnvironment(env)
     }
