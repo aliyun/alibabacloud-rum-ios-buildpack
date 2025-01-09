@@ -38,7 +38,7 @@ public class AlibabaCloudRUM : NSObject {
     private static let SDK_VERSION_PREFIX = "_sv_"
     private static let SDK_FRAMEWORK = "_frmk_"
 //    private static let S_RUM_SDK_VERSION = Bundle(for: AlibabaCloudRUM.self).infoDictionary?["CFBundleShortVersionString"] as? String
-    private static let RUM_SDK_VERSION = "0.3.5-beta.1"
+    private static let RUM_SDK_VERSION = "0.3.5"
     private static var env: String?
     
     private static let shared: AlibabaCloudRUM = AlibabaCloudRUM()
