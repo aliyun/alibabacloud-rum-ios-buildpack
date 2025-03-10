@@ -359,6 +359,11 @@ public class AlibabaCloudRUM : NSObject {
             return
         }
     }
+    
+    @objc(getDeviceId)
+    public static func getDeviceId() -> String {
+        return OpenRUM.deviceID()
+    }
 
     private static func frameworkDescription(_ framework: Framework) -> String {
         switch framework {
