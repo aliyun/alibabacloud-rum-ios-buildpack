@@ -154,15 +154,15 @@
 		</data>
 		<key>Headers/OpenCore.h</key>
 		<data>
-		YWmLPYRMpvFZwXrJ7tPHz7v3FKw=
+		i7SBVcGgbtQIM+ipcmSt4J0Wdzs=
 		</data>
 		<key>Headers/fishhook.h</key>
 		<data>
-		o4f0T4dqJdvGwPxUtfPFj/jB6wI=
+		lgF/nUBmemoEVHW/6j62ZreSNgc=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		9mIAQd5NZy7emvkm8Foap4CIdt0=
+		RpcPAxO+aNWgqlakJ87FlWkjDls=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -586,22 +586,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			YWmLPYRMpvFZwXrJ7tPHz7v3FKw=
+			i7SBVcGgbtQIM+ipcmSt4J0Wdzs=
 			</data>
 			<key>hash2</key>
 			<data>
-			oG247iNnUrOUTbQ3jyIqzD9luqrTd5Rw+6bu3lzTuzI=
+			5NqrZkmfIkABzbQTghEPBadTTnOyJOhTLfdMBSqV538=
 			</data>
 		</dict>
 		<key>Headers/fishhook.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			o4f0T4dqJdvGwPxUtfPFj/jB6wI=
+			lgF/nUBmemoEVHW/6j62ZreSNgc=
 			</data>
 			<key>hash2</key>
 			<data>
-			CEKlHIdCIv3P8SCCtEQZsrg2pSoDAbjE8Y6KjryhAHE=
+			mAiDFRYODr9Xlhfb+7Kko9jnOVcGrCS194LwhkkA72w=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

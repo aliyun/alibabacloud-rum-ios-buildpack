@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OpenRUM : NSObject
 
-/// 启动 SDK（Ver:8.17.102）
+/// 启动 SDK（Ver:8.17.100）
 + (void)startWithAppID:(NSString *)appID;
 
 /// 设置Config地址（请在SDK启动之前设置） 默认为公有云地址，无需设置

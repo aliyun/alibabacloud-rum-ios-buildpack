@@ -4,8 +4,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define OR_FISHHOOK_EXPORT 1
-
 #if !defined(OR_FISHHOOK_EXPORT)
 #define OR_FISHHOOK_VISIBILITY __attribute__((visibility("hidden")))
 #else
