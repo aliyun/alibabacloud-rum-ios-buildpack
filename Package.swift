@@ -11,7 +11,7 @@ let package = Package(
             name: "AlibabaCloudRUM",
             targets: ["AlibabaCloudRUM"]),
         .library(
-            name: "OpenRUM",
+            name: "AlibabaCloudRUMSDK",
             targets: ["AlibabaCloudRUM"]),
     ],
     targets: [
@@ -20,9 +20,7 @@ let package = Package(
         .target(
             name: "AlibabaCloudRUM",
             dependencies: [
-                "OpenCore",
-                "OpenBusiness",
-                "OpenRUM"
+                "AlibabaCloudRUMSDK"
             ],
             path: "Sources/AlibabaCloudRUM",
 //            cSettings: [
@@ -46,16 +44,8 @@ let package = Package(
             publicHeadersPath: "AlibabaCloudRUMBridge/include"
         ),
         .binaryTarget(
-            name: "OpenCore",
-            path: "Sources/OpenCore/OpenCore.xcframework"
-        ),
-        .binaryTarget(
-            name: "OpenBusiness",
-            path: "Sources/OpenBusiness/OpenBusiness.xcframework"
-        ),
-        .binaryTarget(
-            name: "OpenRUM",
-            path: "Sources/OpenRUM/OpenRUM.xcframework"
+            name: "AlibabaCloudRUMSDK",
+            path: "Sources/AlibabaCloudRUMSDK/AlibabaCloudRUMSDK.xcframework"
         ),
         .testTarget(
             name: "OpenRUMTests",

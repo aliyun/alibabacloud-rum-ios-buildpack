@@ -7,14 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F816A4C62DAE5B180010DA32 /* AlibabaCloudRUMSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F816A4C42DAE5B180010DA32 /* AlibabaCloudRUMSDK.xcframework */; };
 		F85BAE672C9516DE00EB1ACB /* AlibabaCloudRUM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85BAE622C9516DE00EB1ACB /* AlibabaCloudRUM.swift */; };
 		F85BAE802C9517E800EB1ACB /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F85BAE7F2C9517E800EB1ACB /* libc++.tbd */; };
 		F85BAE822C9517EF00EB1ACB /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F85BAE812C9517EF00EB1ACB /* libresolv.tbd */; };
 		F8C365EB2CF6C9C100E17CFE /* AlibabaCloudRUMBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = F8C365DB2CF6C8DA00E17CFE /* AlibabaCloudRUMBridge.m */; };
 		F8C365EC2CF6C9C500E17CFE /* AlibabaCloudRUMBridge.h in Sources */ = {isa = PBXBuildFile; fileRef = F8C365DA2CF6C8DA00E17CFE /* AlibabaCloudRUMBridge.h */; };
-		F8D1CA582C9BEFE400F8EB9B /* OpenBusiness.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F85BAE602C9516DE00EB1ACB /* OpenBusiness.xcframework */; };
-		F8D1CA5B2C9BEFE500F8EB9B /* OpenCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F85BAE642C9516DE00EB1ACB /* OpenCore.xcframework */; };
-		F8D1CA5D2C9BEFE600F8EB9B /* OpenRUM.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F85BAE5E2C9516DE00EB1ACB /* OpenRUM.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,11 +38,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F816A4C42DAE5B180010DA32 /* AlibabaCloudRUMSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = AlibabaCloudRUMSDK.xcframework; sourceTree = "<group>"; };
 		F85BAE552C9516BE00EB1ACB /* AlibabaCloudRUM.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AlibabaCloudRUM.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F85BAE5E2C9516DE00EB1ACB /* OpenRUM.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OpenRUM.xcframework; sourceTree = "<group>"; };
-		F85BAE602C9516DE00EB1ACB /* OpenBusiness.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OpenBusiness.xcframework; sourceTree = "<group>"; };
 		F85BAE622C9516DE00EB1ACB /* AlibabaCloudRUM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlibabaCloudRUM.swift; sourceTree = "<group>"; };
-		F85BAE642C9516DE00EB1ACB /* OpenCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OpenCore.xcframework; sourceTree = "<group>"; };
 		F85BAE6A2C9516EF00EB1ACB /* build-packages.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-packages.sh"; sourceTree = "<group>"; };
 		F85BAE6B2C9516EF00EB1ACB /* build-alibabcloud-rum.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-alibabcloud-rum.sh"; sourceTree = "<group>"; };
 		F85BAE6C2C9516EF00EB1ACB /* build-xcframework.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-xcframework.sh"; sourceTree = "<group>"; };
@@ -68,10 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8D1CA582C9BEFE400F8EB9B /* OpenBusiness.xcframework in Frameworks */,
-				F8D1CA5D2C9BEFE600F8EB9B /* OpenRUM.xcframework in Frameworks */,
+				F816A4C62DAE5B180010DA32 /* AlibabaCloudRUMSDK.xcframework in Frameworks */,
 				F85BAE822C9517EF00EB1ACB /* libresolv.tbd in Frameworks */,
-				F8D1CA5B2C9BEFE500F8EB9B /* OpenCore.xcframework in Frameworks */,
 				F85BAE802C9517E800EB1ACB /* libc++.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,6 +80,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F816A4C52DAE5B180010DA32 /* AlibabaCloudRUMSDK */ = {
+			isa = PBXGroup;
+			children = (
+				F816A4C42DAE5B180010DA32 /* AlibabaCloudRUMSDK.xcframework */,
+			);
+			path = AlibabaCloudRUMSDK;
+			sourceTree = "<group>";
+		};
 		F85BAE2B2C95166300EB1ACB = {
 			isa = PBXGroup;
 			children = (
@@ -114,29 +116,11 @@
 		F85BAE5C2C9516DE00EB1ACB /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F85BAE5D2C9516DE00EB1ACB /* OpenRUM */,
-				F85BAE5F2C9516DE00EB1ACB /* OpenBusiness */,
+				F816A4C52DAE5B180010DA32 /* AlibabaCloudRUMSDK */,
 				F85BAE612C9516DE00EB1ACB /* AlibabaCloudRUM */,
 				F8C365D82CF6C8DA00E17CFE /* AlibabaCloudRUMBridge */,
-				F85BAE632C9516DE00EB1ACB /* OpenCore */,
 			);
 			path = Sources;
-			sourceTree = "<group>";
-		};
-		F85BAE5D2C9516DE00EB1ACB /* OpenRUM */ = {
-			isa = PBXGroup;
-			children = (
-				F85BAE5E2C9516DE00EB1ACB /* OpenRUM.xcframework */,
-			);
-			path = OpenRUM;
-			sourceTree = "<group>";
-		};
-		F85BAE5F2C9516DE00EB1ACB /* OpenBusiness */ = {
-			isa = PBXGroup;
-			children = (
-				F85BAE602C9516DE00EB1ACB /* OpenBusiness.xcframework */,
-			);
-			path = OpenBusiness;
 			sourceTree = "<group>";
 		};
 		F85BAE612C9516DE00EB1ACB /* AlibabaCloudRUM */ = {
@@ -145,14 +129,6 @@
 				F85BAE622C9516DE00EB1ACB /* AlibabaCloudRUM.swift */,
 			);
 			path = AlibabaCloudRUM;
-			sourceTree = "<group>";
-		};
-		F85BAE632C9516DE00EB1ACB /* OpenCore */ = {
-			isa = PBXGroup;
-			children = (
-				F85BAE642C9516DE00EB1ACB /* OpenCore.xcframework */,
-			);
-			path = OpenCore;
 			sourceTree = "<group>";
 		};
 		F85BAE692C9516EF00EB1ACB /* Scripts */ = {

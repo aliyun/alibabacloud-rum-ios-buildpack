@@ -22,9 +22,7 @@ touch ver_${VERSION}_$(date "+%Y%m%d_%H%M").txt
 popd
 
 # copy OpenRUM SDK to build directory
-cp -r Sources/OpenBusiness/OpenBusiness.xcframework ./build/OpenBusiness.xcframework
-cp -r Sources/OpenCore/OpenCore.xcframework ./build/OpenCore.xcframework
-cp -r Sources/OpenRUM/OpenRUM.xcframework ./build/OpenRUM.xcframework
+cp -r Sources/AlibabaCloudRUMSDK/AlibabaCloudRUMSDK.xcframework ./build/AlibabaCloudRUMSDK.xcframework
 
 pushd Scripts
 # create AlibabaCloudRUM.xcframework

@@ -1,6 +1,0 @@
-framework module OpenBusiness {
-  umbrella header "OpenBusiness.h"
-  export *
-
-  module * { export * }
-}

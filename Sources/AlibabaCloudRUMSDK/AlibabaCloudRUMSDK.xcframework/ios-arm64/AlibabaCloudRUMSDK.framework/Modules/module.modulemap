@@ -1,0 +1,11 @@
+framework module AlibabaCloudRUMSDK {
+  umbrella header "AlibabaCloudRUMSDK.h"
+  export *
+
+  module * { export * }
+}
+
+module AlibabaCloudRUMSDK.Swift {
+  header "AlibabaCloudRUMSDK-Swift.h"
+  requires objc
+}
