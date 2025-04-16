@@ -177,7 +177,7 @@ public class AlibabaCloudRUM : NSObject {
     // MARK: ===== exception =====
     @objc(setCustomException:causeBy:errorDump:)
     public static func setCustomException(_ exceptionType: String, causeBy: String, errorDump: String) {
-//        AlibabaCloudRUMSDK.setCustomException(exceptionType, causeBy: causeBy, errorDump: errorDump)
+        AlibabaCloudRUMSDK.reportCustomException(exceptionType, causeBy: causeBy, errorDump: errorDump)
     }
     
     // MARK: ===== metric =====
