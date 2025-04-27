@@ -86,10 +86,23 @@ public class AlibabaCloudRUM : NSObject {
     /// 开启/关闭电量模块。
     /// 默认为关闭，需要在start方法调用之前设置
     /// - Parameters:
-    ///     - enable: 是否开启
+    ///   - enable:  是否开启
     @objc(enableBattery:)
     public static func enableBattery(_ enable: Bool) {
         OpenRUM.updateLocalConfigWithBattery(on: enable)
+    }
+    
+    /// 开启/关闭 webview 模块。
+    /// 默认为开启，在需要时调用即可
+    /// - Parameters:
+    ///   - enable: 是否开启
+    @objc(enableTrackingWebView:)
+    public static func enableTrackingWebView(_ enable: Bool) {
+        if enable {
+            OpenRUM.enableWebAgentInjection()
+        } else {
+            OpenRUM.disableWebAgentInjection()
+        }
     }
     
     /// 启动SDK
