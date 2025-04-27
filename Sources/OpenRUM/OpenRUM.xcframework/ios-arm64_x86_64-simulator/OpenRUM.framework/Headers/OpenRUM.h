@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OpenRUM : NSObject
 
-/// 启动 SDK（Ver:8.17.100）
+/// 启动 SDK（Ver:8.20.101）
 + (void)startWithAppID:(NSString *)appID;
 
 /// 设置Config地址（请在SDK启动之前设置） 默认为公有云地址，无需设置
@@ -113,7 +113,22 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)enableCatchNSExceptionSubClasses;
 
 /// 禁止通过iOS探针注入web探针
+///
+/// 调用该方法后，通过-[WKWebView initWithFrame:configuration:]初始化的WKWebView实例将不再注入web探针
+///
+/// 注意：
+/// - 此方法仅影响在调用该方法后初始化的WKWebView实例，对已存在的实例无影响
 + (void)disableWebAgentInjection;
+
+/// 允许通过iOS探针注入web探针
+///
+/// 调用该方法后，通过-[WKWebView initWithFrame:configuration:]初始化的WKWebView实例将注入web探针。
+///
+/// 默认情况下，探针启动后即允许注入，除非调用了disableWebAgentInjection方法。
+///
+/// 注意：
+/// - 此方法仅影响在调用该方法后初始化的WKWebView实例，对已存在的实例无影响
++ (void)enableWebAgentInjection;
 
 /// 设置web探针的本地绝对路径
 /// - Parameter path: web探针的本地路径
@@ -486,6 +501,23 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param netModel 网络模型
 + (void)flutterReportNetwork:(ORNetworkModel *)netModel;
 
+#pragma mark - uniapp交互接口
++ (void)uniappReportJSError:(NSDictionary *)jsError;
+
+/// uniapp上报行为接口
+/// @param time 发生时间（单位：us）
+/// @param type 操作类型（1：点击，2：手势，3：输入）
+/// @param name 名称
+/// @param info 信息
+/// @param viewName 视图名称
+/// @param loadTime 加载耗时
++ (void)uniappReportActionWithTime:(long long)time
+                              type:(int)type
+                              name:(NSString *)name
+                              info:(NSString *)info
+                          viewName:(NSString *)viewName
+                          loadTime:(NSInteger)loadTime;
+
 @end
 
 ///站点测速接口对象定义
@@ -530,6 +562,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///自定义路由接口对象定义
 @interface ORRouteModel : NSObject
 
+- (BOOL)isValid;
+
 @property (nonatomic, copy) NSString *toUrl;                //目标路由
 @property (nonatomic, copy) NSString *fromUrl;              //来源路由
 @property (nonatomic, assign) NSInteger time;               //开始时间戳 「单位:us」
@@ -541,6 +575,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *frameworkName;        //框架名称vue rect angular
 @property (nonatomic, copy, nullable) NSString *alias;      //路由地址名称 非必要
 @property (nonatomic, assign) BOOL isCustom;                //是否为自定义
+@property (nonatomic, copy) NSString *pvid;
 
 @end
 

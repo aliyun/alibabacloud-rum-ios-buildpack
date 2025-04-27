@@ -2,7 +2,7 @@
 //  OpenCore.h
 
 /// Core组件版本号
-#define ORCORE_VERSION (@"1.5.2")
+#define ORCORE_VERSION (@"1.6.0")
 
 #import <Foundation/Foundation.h>
 
