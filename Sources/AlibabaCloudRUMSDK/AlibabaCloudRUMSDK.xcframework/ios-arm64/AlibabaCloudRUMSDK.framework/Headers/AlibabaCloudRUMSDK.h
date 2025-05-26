@@ -20,11 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AlibabaCloudRUMSDK : NSObject
 
-+ (void) setDebuggable: (BOOL)debuggable;
-+ (BOOL) start: (NSString *) configAddress appId: (NSString *)appId;
-+ (BOOL) stop;
-+ (BOOL) isStarted;
++ (void)setDebuggable:(BOOL)debuggable;
++ (BOOL)start:(NSString *)configAddress appId:(NSString *)appId;
++ (BOOL)stop;
++ (BOOL)isStarted;
 
+#pragma mark - Custom -
 + (void)setCustomEvent:(NSString *)name
                  group:(NSString *)group
              snapshots:(NSString * _Nullable)snapshots
