@@ -73,6 +73,24 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Parameter channel: The channel string to set for the app.
 + (void)setChannel:(NSString *)channel;
 
+#pragma mark - For Test -
++ (void)saveCacheForTest:(BOOL)main
+                  action:(BOOL)action
+                 network:(BOOL)network
+                   crash:(BOOL)crash
+                longtask:(BOOL)longtask
+              nativeView:(BOOL)nativeView
+                      h5:(BOOL)h5
+                 spaView:(BOOL)spaView
+               customLog:(BOOL)customLog
+             customEvent:(BOOL)customEvent
+            customMetric:(BOOL)customMetric
+                 battery:(BOOL)battery
+              skywalking:(BOOL)skywalking
+                     w3c:(BOOL)w3c
+         tracingSampling:(BOOL)tracingSampling;
++ (void)setTesting:(BOOL)testing;
+
 @end
 
 NS_ASSUME_NONNULL_END
