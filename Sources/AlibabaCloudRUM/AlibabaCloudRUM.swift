@@ -229,7 +229,7 @@ public class AlibabaCloudRUM : NSObject {
     
     @objc(setCustomEvent:group:snapshots:value:info:)
     public static func setCustomEvent(_ name: String, group: String? = nil, snapshots: String? = nil, value: Double = 0, info: [String: String]? = nil) {
-        AlibabaCloudRUMSDK.setCustomEvent(name, group: group ?? "", snapshots: snapshots, value: value, info: info)
+        AlibabaCloudRUMSDK.setCustomEvent(name, type: group ?? "", group: group ?? "", snapshots: snapshots, value: value, info: info)
     }
     
     // MARK: ===== log =====
@@ -250,7 +250,7 @@ public class AlibabaCloudRUM : NSObject {
     
     @objc(setCustomLog:name:snapshots:level:info:)
     public static func setCustomLog(_ logInfo: String, name: String? = nil, snapshots: String? = "", level: String? = "INFO", info: [String: String]? = nil) {
-        AlibabaCloudRUMSDK.setCustomLog(logInfo, name: name, snapshots: snapshots, level: level, info: info)
+        AlibabaCloudRUMSDK.setCustomLog(logInfo, name: name, type: name, snapshots: snapshots, level: level, info: info)
     }
     
     @objc(getDeviceId)

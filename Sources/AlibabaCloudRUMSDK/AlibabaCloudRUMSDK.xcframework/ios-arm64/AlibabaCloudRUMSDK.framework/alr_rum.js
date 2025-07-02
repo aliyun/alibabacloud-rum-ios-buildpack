@@ -156,13 +156,12 @@
  Object.defineProperty(exports, "__esModule", {
    value: true
  });
- exports.VERSION = exports.localStorage = exports.history = exports.location = exports.document = exports.global = void 0;
+ exports.VERSION = exports.history = exports.location = exports.document = exports.global = void 0;
  exports.global = window;
  exports.document = window.document;
  exports.location = window.location;
  exports.history = window.history;
- exports.localStorage = window.localStorage;
- exports.VERSION = 'cdn-0.0.1';
+ exports.VERSION = 'cdn-0.0.2';
 
  /***/ }),
  /* 2 */
@@ -2936,6 +2935,31 @@
  var global_1 = __webpack_require__(1);
  var USER_ID = '_arms_uid';
  var RUM_SESSION = '_arms_session';
+ var testKey = '_test_';
+ var isLocalStorageEnabled = function () {
+   try {
+     localStorage.setItem(testKey, "1");
+     localStorage.removeItem(testKey);
+     return true;
+   } catch (e) {
+     return false;
+   }
+ }();
+ var isCookieEnabled = function () {
+   try {
+     global_1.document.cookie = "".concat(testKey, "=1; path=/");
+     var isEnabled = global_1.document.cookie.indexOf("".concat(testKey, "=")) !== -1;
+     global_1.document.cookie = "".concat(testKey, "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT");
+     return isEnabled;
+   } catch (e) {
+     return false;
+   }
+ }();
+ var AUTO = 'auto';
+ var LOCAL_STORAGE = 'localStorage';
+ var COOKIE = 'cookie';
+ var MEMORY = 'memory';
+ var MemoryStorage = global_1.global.__RUM_MEMORY_STORAGE = {};
  var RumSession = /*#__PURE__*/function () {
    function RumSession() {
      _classCallCheck(this, RumSession);
@@ -3058,7 +3082,7 @@
          maxDuration = sessionConfig.maxDuration,
          overtime = sessionConfig.overtime,
          _sessionConfig$storag = sessionConfig.storage,
-         storage = _sessionConfig$storag === void 0 ? 'localStorage' : _sessionConfig$storag,
+         storage = _sessionConfig$storag === void 0 ? AUTO : _sessionConfig$storag,
          domain = sessionConfig.domain;
        if (!(0, rum_core_1.isNumber)(sampleRate) || sampleRate < 0 || sampleRate > 1) {
          sampleRate = 1;
@@ -3069,16 +3093,17 @@
        if (!(0, rum_core_1.isNumber)(overtime) || overtime > rum_core_1.ONE_HOUR || overtime < 10 * rum_core_1.ONE_MINUTE) {
          overtime = 30 * rum_core_1.ONE_MINUTE;
        }
-       if (storage !== 'cookie' && storage !== 'localStorage') {
-         storage = 'auto';
+       if (storage !== COOKIE && storage !== LOCAL_STORAGE && storage !== MEMORY) {
+         storage = AUTO;
        }
-       if (storage === 'auto') {
-         try {
-           global_1.localStorage.getItem('arms_test');
-           storage = 'localStorage';
-         } catch (e) {
-           storage = 'cookie';
-         }
+       if (storage === AUTO) {
+         storage = LOCAL_STORAGE;
+       }
+       if (storage === LOCAL_STORAGE && !isLocalStorageEnabled) {
+         storage = COOKIE;
+       }
+       if (storage === COOKIE && !isCookieEnabled) {
+         storage = MEMORY;
        }
        return {
          sampleRate: sampleRate,
@@ -3091,14 +3116,13 @@
    }, {
      key: "getBaseEvent",
      value: function getBaseEvent() {
-       var event = {
+       return {
          timestamp: (0, base_1.getCurrentTime)(),
          session_id: this.getSessionId(),
          event_id: this.getEventId(),
          view: this.ctx ? (0, view_1.getCurView)(this.ctx) : undefined,
          times: 1
        };
-       return event;
      }
    }, {
      key: "setItem",
@@ -3107,19 +3131,24 @@
        var _this$sessionConfig2 = this.sessionConfig,
          storage = _this$sessionConfig2.storage,
          domain = _this$sessionConfig2.domain;
-       if (storage === 'cookie') {
+       if (storage === LOCAL_STORAGE) {
+         localStorage.setItem(key, value);
+       } else if (storage === COOKIE) {
          (0, cookie_1.setCookie)(key, value, days * rum_core_1.ONE_DAY, domain);
        } else {
-         global_1.localStorage.setItem(key, value);
+         MemoryStorage[key] = value;
        }
      }
    }, {
      key: "getItem",
      value: function getItem(key) {
-       if (this.sessionConfig.storage === 'cookie') {
+       var storage = this.sessionConfig.storage;
+       if (storage === LOCAL_STORAGE) {
+         return localStorage.getItem(key);
+       } else if (storage === COOKIE) {
          return (0, cookie_1.getCookie)(key);
        } else {
-         return global_1.localStorage.getItem(key);
+         return MemoryStorage[key];
        }
      }
    }]);
@@ -3136,15 +3165,15 @@
  Object.defineProperty(exports, "__esModule", {
    value: true
  });
- exports.onNativeMessage = exports.requestNative = exports.osType = exports.navigator = exports.document = exports.global = exports.VERSION = void 0;
+ exports.onNativeReady = exports.onNativeMessage = exports.requestNative = exports.osType = exports.navigator = exports.document = exports.global = exports.VERSION = void 0;
  var rum_core_1 = __webpack_require__(0);
- exports.VERSION = 'npm-0.0.1';
+ exports.VERSION = 'npm-0.0.2';
  exports.global = window;
  exports.document = exports.global.document;
  exports.navigator = exports.global.navigator;
  function detectOS() {
    var ua = exports.navigator.userAgent || exports.navigator.vendor || exports.global.opera;
-   if (/harmonyos/i.test(ua)) {
+   if (/harmonyos|OpenHarmony/i.test(ua)) {
      return 'HarmonyOS';
    }
    if (/ipad|iphone|ipod/i.test(ua) && !exports.global.MSStream) {
@@ -3161,6 +3190,7 @@
    handleMessageFromNative: handleMessageFromNative
  };
  var webviewPort = null;
+ var readyCallback = null;
  if (exports.osType === 'Android' || exports.osType === 'HarmonyOS') {
    window.addEventListener('message', function (event) {
      if (event.data !== '__init_alr_port__') return;
@@ -3170,6 +3200,7 @@
        handleMessageFromNative(msg.data);
      };
      webviewPort = exports.global.__ALRBridge.webviewPort = port;
+     if (readyCallback) readyCallback();
    });
  }
  function callNative(data) {
@@ -3239,6 +3270,14 @@
    messageEvents[key].push(callback);
  };
  exports.onNativeMessage = onNativeMessage;
+ var onNativeReady = function onNativeReady(callback) {
+   if (webviewPort || exports.osType === 'iOS' || exports.osType === 'Android') {
+     callback();
+     return;
+   }
+   readyCallback = callback;
+ };
+ exports.onNativeReady = onNativeReady;
 
  /***/ }),
  /* 30 */
@@ -3300,15 +3339,7 @@
      _classCallCheck(this, WebviewRum);
      _this = _callSuper(this, WebviewRum, arguments);
      _this.version = global_1.VERSION;
-     _this.updateConfigHandle = function (config) {
-       if ((0, rum_core_1.isString)(config)) {
-         try {
-           config = JSON.parse(config);
-         } catch (e) {
-           return;
-         }
-       }
-       if (!(0, rum_core_1.isObject)(config)) return;
+     _this.updateConfig = function (config) {
        console.warn('RumConfigUpdate', config);
        var context = _this.client.getContext();
        context.setConfig(config);
@@ -3332,34 +3363,44 @@
        this.client.useReporter(new reporter_1["default"]());
        this.client.init(configuration, new rum_browser_1.RumSession());
        (0, global_1.onNativeMessage)('updateConfig', function (config) {
-         _this2.updateConfigHandle(config);
+         if ((0, rum_core_1.isString)(config)) {
+           try {
+             config = JSON.parse(config);
+           } catch (e) {
+             return;
+           }
+         }
+         if (!(0, rum_core_1.isObject)(config)) return;
+         _this2.updateConfig(config);
        });
        return this;
      }
    }]);
  }(rum_browser_1.ArmsRum);
  exports.WebviewRum = WebviewRum;
- (0, global_1.requestNative)({
-   action: "getConfig",
-   data: {},
-   success: function success(config) {
-     if (!config) return;
-     if ((0, rum_core_1.isString)(config)) {
-       try {
-         config = JSON.parse(config);
-       } catch (e) {
-         console.warn('getConfig error', e);
-         return;
+ (0, global_1.onNativeReady)(function () {
+   (0, global_1.requestNative)({
+     action: "getConfig",
+     data: {},
+     success: function success(config) {
+       if (!config) return;
+       if ((0, rum_core_1.isString)(config)) {
+         try {
+           config = JSON.parse(config);
+         } catch (e) {
+           console.warn('getConfig error', e);
+           return;
+         }
        }
+       if (!config.pid) {
+         config.pid = "webview@".concat(global_1.VERSION);
+       }
+       if (!config.endpoint) {
+         config.endpoint = "http://127.0.0.1/?version=".concat(global_1.VERSION);
+       }
+       global_1.global.__webviewRum = new WebviewRum(config);
      }
-     if (!config.pid) {
-       config.pid = "webview@".concat(global_1.VERSION);
-     }
-     if (!config.endpoint) {
-       config.endpoint = "http://127.0.0.1/?version=".concat(global_1.VERSION);
-     }
-     global_1.global.__webviewRum = new WebviewRum(config);
-   }
+   });
  });
 
  /***/ }),

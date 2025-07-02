@@ -27,12 +27,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Custom -
 + (void)setCustomEvent:(NSString *)name
+                  type:(NSString * _Nullable)type
                  group:(NSString *)group
              snapshots:(NSString * _Nullable)snapshots
                  value:(double)value
                   info:(NSDictionary<NSString *, NSString *> * _Nullable)info;
 + (void)setCustomLog:(NSString *)logInfo
                 name:(NSString * _Nullable)name
+                type:(NSString * _Nullable)type
            snapshots:(NSString * _Nullable)snapshots
                level:(NSString * _Nullable)level
                 info:(NSDictionary<NSString *, NSString *> * _Nullable)info;
@@ -73,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Parameter channel: The channel string to set for the app.
 + (void)setChannel:(NSString *)channel;
 
+#ifdef ALR_TEST
 #pragma mark - For Test -
 + (void)saveCacheForTest:(BOOL)main
                   action:(BOOL)action
@@ -90,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
                      w3c:(BOOL)w3c
          tracingSampling:(BOOL)tracingSampling;
 + (void)setTesting:(BOOL)testing;
-
+#endif
 @end
 
 NS_ASSUME_NONNULL_END

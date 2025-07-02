@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>24C101</string>
+	<string>23H124</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
 	<string>AlibabaCloudRUMSDK</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.alibabacloud.rum.AlibabaCloudRUM</string>
+	<string>com.alibabacloud.rum.AlibabaCloudRUMSDK</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
