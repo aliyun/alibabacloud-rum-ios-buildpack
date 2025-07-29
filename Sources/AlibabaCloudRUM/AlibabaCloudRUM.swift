@@ -34,10 +34,10 @@ public enum Framework: Int {
 
 @objc
 public class AlibabaCloudRUM : NSObject {
-    private static let RUM_SDK_VERSION = "0.4.0-beta.5"
 
     private static var env: String?
-    private static var configAddress: String?
+    private static var endpoint: String?
+    private static var workspace: String?
     
     private static let shared: AlibabaCloudRUM = AlibabaCloudRUM()
     
@@ -84,15 +84,33 @@ public class AlibabaCloudRUM : NSObject {
     ///     - appID: 应用ID, 必填
     @objc(startWithAppID:)
     public static func start(_ appID: String) {
-        AlibabaCloudRUMSDK.start(configAddress ?? "", appId: appID)
+        AlibabaCloudRUMSDK.start(endpoint ?? "", workspace: workspace ?? "", appId: appID)
+    }
+    
+    /// 配置 endpoint 地址
+    /// - Parameters:
+    ///  - endpoint: endpoint 地址
+    @objc
+    public static func setEndpoint(_ endpoint: String) {
+        self.endpoint = endpoint
     }
     
     /// 配置config地址
     /// - Parameters:
-    ///     - configAddress: config 地址
+    ///  - configAddress: config 地址
+    @available(*, deprecated, renamed: "setEndpoint(_:)", message: "This method has been renamed. Please use setEndpoint(_:) instead.")
     @objc
     public static func setConfigAddress(_ configAddress: String) {
-        self.configAddress = configAddress
+        self.setEndpoint(configAddress)
+    }
+    
+    /// 配置 workspace
+    /// - Note: 可选配置，不设置时默认传`""`。对应CMS 2.0 中的工作空间，需要在`start(_:)`方法之前调用。
+    /// - Parameters:
+    ///  - workspace: workspace 工作空间
+    @objc
+    public static func setWorkspace(_ workspace: String) {
+        self.workspace = workspace
     }
     
     @objc
@@ -107,7 +125,6 @@ public class AlibabaCloudRUM : NSObject {
             return
         }
         self.env = env
-        
         
         AlibabaCloudRUMSDK.setEnvironment(env)
     }
@@ -161,12 +178,21 @@ public class AlibabaCloudRUM : NSObject {
     
     @objc(setAppFramework:)
     public static func setAppFramework(_ framework: Framework) {
-//        AlibabaCloudRUMSDK.set
+        // not support now
     }
     
+    @available(*, deprecated, renamed: "setDebuggable(_:)", message: "This method has been renamed. Please use setDebuggable(_:) instead.")
     @objc
     public static func setLogFlag(_ flag: NSNumber) {
         AlibabaCloudRUMSDK.setDebuggable(0xffff == flag)
+    }
+    
+    /// 开启/关闭SDK调试模式
+    /// - Parameters:
+    ///  - debuggable: 开启或关闭debug模式。
+    @objc
+    public static func setDebuggable(_ debuggable: Bool) {
+        AlibabaCloudRUMSDK.setDebuggable(debuggable)
     }
     
     @objc
