@@ -163,7 +163,7 @@ public class AlibabaCloudRUM : NSObject {
     
     @objc
     public static func setUserName(_ userID: String) {
-        AlibabaCloudRUMSDK.setUserId(userID)
+        AlibabaCloudRUMSDK.setUserName(userID)
     }
     
     @objc(setExtraInfo:)
