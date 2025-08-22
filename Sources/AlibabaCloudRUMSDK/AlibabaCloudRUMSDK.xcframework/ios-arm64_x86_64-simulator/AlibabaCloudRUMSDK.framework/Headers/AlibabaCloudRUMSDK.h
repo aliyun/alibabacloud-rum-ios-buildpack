@@ -75,6 +75,30 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Parameter channel: The channel string to set for the app.
 + (void)setChannel:(NSString *)channel;
 
+#pragma mark - Flutter -
++ (void)flutterReportException:(NSString *)exceptionType
+                       causeBy:(NSString *)causeBy
+                     errorDump:(NSString *)errorDump;
++ (void)flutterReportCustomException:(NSString *)exceptionType
+                             causeBy:(NSString *)causeBy
+                           errorDump:(NSString *)errorDump;
++ (void)flutterReportResource:(NSURL *)url
+                       method:(NSString *)method
+                  connectTime:(NSInteger)connectTime
+                 responseTime:(NSInteger)responseTime
+                         type:(NSString *)type
+             responseDataSize:(NSInteger)responseDataSize
+                    errorCode:(NSInteger)errorCode
+                 errorMessage:(NSString *)errorMessage
+               requestHeaders:(NSDictionary *)requestHeaders
+              responseHeaders:(NSDictionary *)responseHeaders;
++ (void)flutterReportView:(NSString *)viewId
+                 loadTime:(NSInteger)loadTime
+                    enter:(BOOL)enter
+                     name:(NSString *)name
+                   method:(NSString *)method;
++ (NSDictionary *)getNetworkTraceConfig;
+
 #ifdef ALR_TEST
 #pragma mark - For Test -
 + (void)saveCacheForTest:(BOOL)main
