@@ -4,7 +4,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'AlibabaCloudRUM'
-    s.version          = "1.0.3-beta.1"
+    s.version          = "1.0.3"
     s.summary          = 'AlibabaCloud RUM service for iOS.'
 
     s.description      = <<-DESC
