@@ -34,7 +34,7 @@ public enum Framework: Int {
 
 @objc
 public class AlibabaCloudRUM : NSObject {
-    private static let RUM_SDK_VERSION = "1.0.5"
+    private static let RUM_SDK_VERSION = "1.0.6-beta.1"
 
     private static var env: String?
     private static var endpoint: String?
