@@ -34,7 +34,7 @@ public enum Framework: Int {
 
 @objc
 public class AlibabaCloudRUM : NSObject {
-    private static let RUM_SDK_VERSION = "1.0.9"
+    private static let RUM_SDK_VERSION = "2.0.0-beta.1"
 
     private static var env: String?
     private static var endpoint: String?
@@ -92,9 +92,9 @@ public class AlibabaCloudRUM : NSObject {
     /// 启动SDK
     /// - Parameters:
     ///     - appID: 应用ID, 必填
-    @objc(startWithAppID:)
-    public static func start(_ appID: String) {
-        AlibabaCloudRUMSDK.start(endpoint ?? "", workspace: workspace ?? "", appId: appID)
+    @objc(start:)
+    public static func start(_ serviceId: String) {
+        AlibabaCloudRUMSDK.start(endpoint ?? "", workspace: workspace ?? "", serviceId: serviceId)
     }
     
     /// 配置 endpoint 地址
@@ -115,7 +115,7 @@ public class AlibabaCloudRUM : NSObject {
     }
     
     /// 配置 workspace
-    /// - Note: 可选配置，不设置时默认传`""`。对应CMS 2.0 中的工作空间，需要在`start(_:)`方法之前调用。
+    /// - Note: 必填，需要在`start(_:)`方法之前调用。
     /// - Parameters:
     ///  - workspace: workspace 工作空间
     @objc

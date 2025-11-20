@@ -1,140 +1,97 @@
 {
-    "s": "",
-    "st": 1744248763652000,
-    "rct": 5,
-    "sat": 24,
-    "ua": "",
-    "di": "",
-    "gdia": null,
-    "gpa": "80",
-    "sp": 100,
-    "spt": 1440,
-    "ss": true,
-    "mc": [
-        {
-            "c": 100,
-            "tv": 2000,
-            "dft": null,
-            "n": "hotlaunch",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": 5000,
-            "dft": null,
-            "n": "coollaunch",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": null,
-            "dft": null,
-            "n": "statechange",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": null,
-            "dft": null,
-            "n": "crash",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": 40,
-            "dft": 5,
-            "n": "lagfps",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": 1,
-            "dft": null,
-            "n": "lagstuck",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": null,
-            "dft": null,
-            "n": "anr",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": null,
-            "dft": null,
-            "n": "h5",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": null,
-            "dft": null,
-            "n": "routechange",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": null,
-            "dft": null,
-            "n": "network",
-            "cs": {
-                "fc": 1,
-                "wl": null
-            }
-        },
-        {
-            "c": 100,
-            "tv": 2000,
-            "dft": null,
-            "n": "view",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": 2000,
-            "dft": null,
-            "n": "action",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": null,
-            "dft": null,
-            "n": "customevent",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": null,
-            "dft": null,
-            "n": "customlog",
-            "cs": null
-        },
-        {
-            "c": 100,
-            "tv": null,
-            "dft": null,
-            "n": "custommetric",
-            "cs": null
-        }
-    ],
-    "cp": null,
-    "usc": 0,
-    "cbhk": null,
-    "cbbk": null,
-    "cbqk": null,
-    "hcs": 1,
-    "trt": 0,
-    "ntc": null,
-    "irhtc": {
-        "uwl": [
-        ]
+  "enable": true,
+  "session": {
+    "sampling": 100.0
+  },
+  "report": {
+    "flush_interval": 5000,
+    "max_batch_count": 50
+  },
+  "collectors": [
+    {
+      "name": "hotlaunch",
+      "enable": true,
+      "sampling": 100.0,
+      "threshold": 2000
     },
-    "reqhtk": [
-        
-    ],
-    "reshtk": [],
-    "rc": 10000
+    {
+      "name": "coollaunch",
+      "enable": true,
+      "sampling": 100.0,
+      "threshold": 5000
+    },
+    {
+      "name": "statechange",
+      "enable": true,
+      "sampling": 100.0
+    },
+    {
+      "name": "crash",
+      "enable": true,
+      "sampling": 100.0
+    },
+    {
+      "name": "lagfps",
+      "enable": true,
+      "sampling": 100.0,
+      "threshold": 40
+    },
+    {
+      "name": "lagstuck",
+      "enable": true,
+      "sampling": 100.0,
+      "threshold": 1
+    },
+    {
+      "name": "anr",
+      "enable": true,
+      "sampling": 100.0
+    },
+    {
+      "name": "h5",
+      "enable": true,
+      "sampling": 100.0
+    },
+    {
+      "name": "routechange",
+      "enable": true,
+      "sampling": 100.0
+    },
+    {
+      "name": "network",
+      "enable": true,
+      "sampling": 100.0
+    },
+    {
+      "name": "view",
+      "enable": true,
+      "sampling": 100.0,
+      "threshold": 2000
+    },
+    {
+      "name": "action",
+      "enable": true,
+      "sampling": 100.0,
+      "threshold": 1
+    },
+    {
+      "name": "customevent",
+      "enable": true,
+      "sampling": 100.0
+    },
+    {
+      "name": "customlog",
+      "enable": true,
+      "sampling": 100.0
+    },
+    {
+      "name": "custommetric",
+      "enable": true,
+      "sampling": 100.0
+    }
+  ],
+  "tracing": {
+    "enable": false,
+    "rules": []
+  }
 }
