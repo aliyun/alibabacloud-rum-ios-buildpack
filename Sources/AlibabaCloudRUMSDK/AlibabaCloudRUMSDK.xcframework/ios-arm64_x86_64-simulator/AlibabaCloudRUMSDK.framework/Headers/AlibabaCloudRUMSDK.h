@@ -97,6 +97,9 @@ NS_ASSUME_NONNULL_BEGIN
                     enter:(BOOL)enter
                      name:(NSString *)name
                    method:(NSString *)method;
++ (void)flutterReportAction:(NSString *)type
+                       name:(NSString *)name
+                       info:(NSString *)info;
 + (NSDictionary *)getNetworkTraceConfig;
 
 #ifdef ALR_TEST
