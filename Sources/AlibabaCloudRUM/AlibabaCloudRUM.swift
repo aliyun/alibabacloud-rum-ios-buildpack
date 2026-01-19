@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import AlibabaCloudRUMSDK
+@_exported import AlibabaCloudRUMSDK
 
 @objc(AlibabaCloudEnv)
 public enum Env: Int {
@@ -34,7 +34,7 @@ public enum Framework: Int {
 
 @objc
 public class AlibabaCloudRUM : NSObject {
-    private static let RUM_SDK_VERSION = "2.0.2"
+    private static let RUM_SDK_VERSION = "2.1.0-beta.2"
 
     private static var env: String?
     private static var endpoint: String?
@@ -290,21 +290,30 @@ public class AlibabaCloudRUM : NSObject {
     }
     
     @objc(setCustomResource:success:url:method:statusCode:errorMessage:)
-    public static func setCustomResource(_ type: String, success: Bool, url: String, method: String, statusCode: Int, errorMessage: String?) {
-        self.setCustomResource(type, success: success, url: url, method: method, statusCode: statusCode, errorMessage: errorMessage, provider: nil, tracing: nil, measuring: nil)
+    public static func setCustomResource(_ type: String, success: Bool, url: String, method: String, statusCode: Int, errorMessage: String?) -> Bool {
+        return self.setCustomResource(type,
+                                      success: success,
+                                      url: url,
+                                      method: method,
+                                      statusCode: statusCode,
+                                      errorMessage: errorMessage,
+                                      provider: nil,
+                                      tracing: nil,
+                                      measuring: nil
+        )
     }
     
     @objc(setCustomResource:success:url:method:statusCode:errorMessage:provider:tracing:measuring:)
-    public static func setCustomResource(_ type: String, success: Bool, url: String, method: String, statusCode: Int, errorMessage: String?, provider: String?, tracing: AlibabaCloudTraceContext?, measuring: AlibabaCloudResourceMeasuring?) {
-        AlibabaCloudRUMSDK.reportCustomResource(type,
-                                                success: success,
-                                                url: url,
-                                                method: method,
-                                                statusCode: statusCode,
-                                                errorMessage: errorMessage,
-                                                provider: provider,
-                                                tracing: tracing,
-                                                measuring: measuring
+    public static func setCustomResource(_ type: String, success: Bool, url: String, method: String, statusCode: Int, errorMessage: String?, provider: String?, tracing: AlibabaCloudTraceContext?, measuring: AlibabaCloudResourceMeasuring?) -> Bool {
+        return AlibabaCloudRUMSDK.reportCustomResource(type,
+                                                       success: success,
+                                                       url: url,
+                                                       method: method,
+                                                       statusCode: statusCode,
+                                                       errorMessage: errorMessage,
+                                                       provider: provider,
+                                                       tracing: tracing,
+                                                       measuring: measuring
         )
     }
     
