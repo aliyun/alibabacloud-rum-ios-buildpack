@@ -289,6 +289,25 @@ public class AlibabaCloudRUM : NSObject {
         AlibabaCloudRUMSDK.setCustomLog(logInfo, name: name, type: name, snapshots: snapshots, level: level, info: info)
     }
     
+    @objc(setCustomResource:success:url:method:statusCode:errorMessage:)
+    public static func setCustomResource(_ type: String, success: Bool, url: String, method: String, statusCode: Int, errorMessage: String?) {
+        self.setCustomResource(type, success: success, url: url, method: method, statusCode: statusCode, errorMessage: errorMessage, provider: nil, tracing: nil, measuring: nil)
+    }
+    
+    @objc(setCustomResource:success:url:method:statusCode:errorMessage:provider:tracing:measuring:)
+    public static func setCustomResource(_ type: String, success: Bool, url: String, method: String, statusCode: Int, errorMessage: String?, provider: String?, tracing: AlibabaCloudTraceContext?, measuring: AlibabaCloudResourceMeasuring?) {
+        AlibabaCloudRUMSDK.reportCustomResource(type,
+                                                success: success,
+                                                url: url,
+                                                method: method,
+                                                statusCode: statusCode,
+                                                errorMessage: errorMessage,
+                                                provider: provider,
+                                                tracing: tracing,
+                                                measuring: measuring
+        )
+    }
+    
     @objc(getDeviceId)
     public static func getDeviceId() -> String {
         return AlibabaCloudRUMSDK.deviceId()

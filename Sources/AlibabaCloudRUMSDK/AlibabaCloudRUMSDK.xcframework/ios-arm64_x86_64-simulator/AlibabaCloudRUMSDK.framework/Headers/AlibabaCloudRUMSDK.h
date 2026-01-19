@@ -18,6 +18,50 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - Trace Support -
+
+typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
+    AlibabaCloud_W3C,
+    AlibabaCloud_SkywalkingV3
+};
+
+@interface AlibabaCloudTraceContext : NSObject
++ (instancetype)contextWithTraceId:(NSString *)traceId
+                            spanId:(NSString *)spanId
+                          protocol:(AlibabaCloudTraceProtocol)protocol;
+
++ (instancetype)contextWithTraceId:(NSString *)traceId
+                            spanId:(NSString *)spanId
+                      parentSpanId:(NSString *)parentSpanId
+                           sampled:(BOOL)sampled
+                          protocol:(AlibabaCloudTraceProtocol)protocol;
+@end
+
+@interface AlibabaCloudTraceHeaderWriter : NSObject
++ (NSDictionary<NSString *, NSString *> *)generateHeadersWithContext:(AlibabaCloudTraceContext *)context;
++ (nullable NSString *)generateSingleHeaderWithContext:(AlibabaCloudTraceContext *)context;
++ (void)setTraceHeaderForRequest:(NSMutableURLRequest *)request context:(AlibabaCloudTraceContext *)context;
++ (BOOL)isRequestContainsTraceHeader:(NSURLRequest *)request;
+@end
+
+@interface AlibabaCloudTraceGenerator : NSObject
++ (NSString *)generateTraceId:(AlibabaCloudTraceProtocol)traceProtocol;
++ (NSString *)generateSpanId:(AlibabaCloudTraceProtocol)traceProtocol;
+@end
+
+@interface AlibabaCloudResourceMeasuring : NSObject
+@property(atomic, assign) NSUInteger duration;
+@property(atomic, assign) NSUInteger size;
+@property(atomic, assign) NSUInteger connectDuration;
+@property(atomic, assign) NSUInteger sslDuration;
+@property(atomic, assign) NSUInteger dnsDuration;
+@property(atomic, assign) NSUInteger redirectDuration;
+@property(atomic, assign) NSUInteger firstByteDuration;
+@property(atomic, assign) NSUInteger downloadDuration;
+
++ (instancetype)measuring;
+@end
+
 @interface AlibabaCloudRUMSDK : NSObject
 
 + (void)setDebuggable:(BOOL)debuggable;
@@ -40,6 +84,15 @@ NS_ASSUME_NONNULL_BEGIN
                 info:(NSDictionary<NSString *, NSString *> * _Nullable)info;
 + (void)setCustomMetric:(NSString *)name value:(int)value snapshots:(NSString * _Nullable)snapshots;
 + (void)reportCustomException:(NSString *)exceptionType causeBy:(NSString *)causeBy errorDump:(NSString *)errorDump;
++ (BOOL)reportCustomResource:(NSString *)type
+                     success:(BOOL)success
+                         url:(NSString *)url
+                      method:(NSString *)method
+                  statusCode:(NSInteger)code
+                errorMessage:(NSString * _Nullable)errorMessage
+                    provider:(NSString * _Nullable)provider
+                     tracing:(AlibabaCloudTraceContext * _Nullable)tracing
+                   measuring:(AlibabaCloudResourceMeasuring * _Nullable)measuring;
 
 #pragma mark - Extra Info -
 + (void)addExtraInfo:(NSDictionary<NSString *, id> *)extraInfo;
