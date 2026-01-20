@@ -13,29 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@_exported import AlibabaCloudRUMSDK
-
-@objc(AlibabaCloudEnv)
-public enum Env: Int {
-    case NONE
-    case PROD
-    case GRAY
-    case PRE
-    case DAILY
-    case LOCAL
-}
-
-@objc(AlibabaCloudFramework)
-public enum Framework: Int {
-    case FLUTTER
-    case REACT_NATIVE
-    case UNITY
-}
+import AlibabaCloudRUMSDK
 
 @objc
 public class AlibabaCloudRUM : NSObject {
-    private static let RUM_SDK_VERSION = "2.1.0-beta.2"
-
+    private static let RUM_SDK_VERSION = "2.1.0-beta.3"
+    
     private static var env: String?
     private static var endpoint: String?
     private static var workspace: String?
@@ -63,7 +46,7 @@ public class AlibabaCloudRUM : NSObject {
     public static func disableSwizzleMethod(_ selector: Selector, clazz: AnyClass) {
         // not support now
     }
-
+    
     /// 禁止检查某个类
     /// @note 需在探针启动前调用。**请谨慎使用**
     @objc(disableInspectClass:)
@@ -77,7 +60,7 @@ public class AlibabaCloudRUM : NSObject {
     ///   - enable:  是否开启
     @objc(enableBattery:)
     public static func enableBattery(_ enable: Bool) {
-
+        
     }
     
     /// 开启/关闭 webview 模块。
@@ -170,7 +153,7 @@ public class AlibabaCloudRUM : NSObject {
     public static func setExtraInfo(_ extraInfo: [String: AnyObject]) {
         AlibabaCloudRUMSDK.setExtraInfo(extraInfo)
     }
-
+    
     @objc(addExtraInfo:)
     public static func addExtraInfo(_ extraInfo: [String: AnyObject]) {
         AlibabaCloudRUMSDK.addExtraInfo(extraInfo)
@@ -299,12 +282,12 @@ public class AlibabaCloudRUM : NSObject {
                                       errorMessage: errorMessage,
                                       provider: nil,
                                       tracing: nil,
-                                      measuring: nil
+                                      measure: nil
         )
     }
     
-    @objc(setCustomResource:success:url:method:statusCode:errorMessage:provider:tracing:measuring:)
-    public static func setCustomResource(_ type: String, success: Bool, url: String, method: String, statusCode: Int, errorMessage: String?, provider: String?, tracing: AlibabaCloudTraceContext?, measuring: AlibabaCloudResourceMeasuring?) -> Bool {
+    @objc(setCustomResource:success:url:method:statusCode:errorMessage:provider:tracing:measure:)
+    public static func setCustomResource(_ type: String, success: Bool, url: String, method: String, statusCode: Int, errorMessage: String?, provider: String?, tracing: AlibabaCloudTracingContext?, measure: AlibabaCloudResourceMeasure?) -> Bool {
         return AlibabaCloudRUMSDK.reportCustomResource(type,
                                                        success: success,
                                                        url: url,
@@ -312,8 +295,8 @@ public class AlibabaCloudRUM : NSObject {
                                                        statusCode: statusCode,
                                                        errorMessage: errorMessage,
                                                        provider: provider,
-                                                       tracing: tracing,
-                                                       measuring: measuring
+                                                       tracing: tracing?.context,
+                                                       measuring: measure?.measuring
         )
     }
     
@@ -321,7 +304,7 @@ public class AlibabaCloudRUM : NSObject {
     public static func getDeviceId() -> String {
         return AlibabaCloudRUMSDK.deviceId()
     }
-
+    
     private static func frameworkDescription(_ framework: Framework) -> String {
         switch framework {
         case .FLUTTER:
@@ -335,3 +318,151 @@ public class AlibabaCloudRUM : NSObject {
         }
     }
 }
+
+@objc(AlibabaCloudEnv)
+public enum Env: Int {
+    case NONE
+    case PROD
+    case GRAY
+    case PRE
+    case DAILY
+    case LOCAL
+}
+
+@objc(AlibabaCloudFramework)
+public enum Framework: Int {
+    case FLUTTER
+    case REACT_NATIVE
+    case UNITY
+}
+
+@objc(AlibabaCloudTracingProtocol)
+public enum AlibabaCloudTracingProtocol: Int {
+    case W3C
+    case SkywalkingV3
+}
+
+@objc
+public class AlibabaCloudTracingContext : NSObject {
+    fileprivate let context: AlibabaCloudTraceContext
+    
+    @objc
+    public init(traceId: String, spanId: String, tracingProtocol: AlibabaCloudTracingProtocol) {
+        let newTracingProtocol = tracingProtocol == AlibabaCloudTracingProtocol.W3C ? AlibabaCloudTraceProtocol.W3C : AlibabaCloudTraceProtocol.skywalkingV3
+        self.context = AlibabaCloudTraceContext(traceId: traceId,
+                                                spanId: spanId,
+                                                protocol: newTracingProtocol)
+    }
+    
+    @objc
+    public init(traceId: String, spanId: String, parentSpanId: String, sampled: Bool, tracingProtocol: AlibabaCloudTracingProtocol) {
+        let newTracingProtocol = tracingProtocol == AlibabaCloudTracingProtocol.W3C ? AlibabaCloudTraceProtocol.W3C : AlibabaCloudTraceProtocol.skywalkingV3
+        self.context = AlibabaCloudTraceContext(traceId: traceId,
+                                                spanId: spanId,
+                                                parentSpanId: parentSpanId,
+                                                sampled: sampled,
+                                                protocol: newTracingProtocol)
+    }
+    
+    @objc
+    public static func context(traceId: String, spanId: String, tracingProtocol: AlibabaCloudTracingProtocol) -> AlibabaCloudTracingContext {
+        return AlibabaCloudTracingContext(traceId: traceId, spanId: spanId, tracingProtocol: tracingProtocol);
+    }
+    
+    @objc
+    public static func context(traceId: String, spanId: String, parentSpanId: String, sampled: Bool, tracingProtocol: AlibabaCloudTracingProtocol) -> AlibabaCloudTracingContext {
+        return AlibabaCloudTracingContext(traceId: traceId, spanId: spanId, parentSpanId: parentSpanId, sampled: sampled, tracingProtocol: tracingProtocol)
+    }
+}
+
+@objc
+public class AlibabaCloudTracingGenerator : NSObject {
+    @objc
+    public static func generateTraceId(_ tracingProtocol: AlibabaCloudTracingProtocol) -> String {
+        let newTracingProtocol = tracingProtocol == AlibabaCloudTracingProtocol.W3C ? AlibabaCloudTraceProtocol.W3C : AlibabaCloudTraceProtocol.skywalkingV3
+        return AlibabaCloudTraceGenerator.generateTraceId(newTracingProtocol)
+    }
+    
+    @objc
+    public static func generateSpanId(_ tracingProtocol: AlibabaCloudTracingProtocol) -> String {
+        let newTracingProtocol = tracingProtocol == AlibabaCloudTracingProtocol.W3C ? AlibabaCloudTraceProtocol.W3C : AlibabaCloudTraceProtocol.skywalkingV3
+        return AlibabaCloudTraceGenerator.generateSpanId(newTracingProtocol)
+    }
+}
+
+@objc
+public class AlibabaCloudTracingHeaderWriter : NSObject {
+    public static func generateHeaders(_ tracingContext: AlibabaCloudTracingContext) -> [String : String] {
+        return AlibabaCloudTraceHeaderWriter.generateHeaders(with: tracingContext.context)
+    }
+    
+    public static func generateSingleHeader(_ tracingContext: AlibabaCloudTracingContext) -> String? {
+        return AlibabaCloudTraceHeaderWriter.generateSingleHeader(with: tracingContext.context)
+    }
+    
+    @objc
+    public static func setTraceHeader(_ request: NSMutableURLRequest, context: AlibabaCloudTracingContext) {
+        AlibabaCloudTraceHeaderWriter.setTraceHeaderFor(request, context: context.context)
+    }
+    
+    @objc
+    public static func isRequestContainsTraceHeader(_ request: URLRequest) -> Bool {
+        return AlibabaCloudTraceHeaderWriter.isRequestContainsTraceHeader(request)
+    }
+}
+
+@objc
+public class AlibabaCloudResourceMeasure: NSObject {
+    fileprivate let measuring: AlibabaCloudResourceMeasuring
+    
+    @objc public var duration: UInt {
+        get { measuring.duration }
+        set { measuring.duration = newValue }
+    }
+    
+    @objc public var size: UInt {
+        get { measuring.size }
+        set { measuring.size = newValue }
+    }
+    
+    @objc public var connectDuration: UInt {
+        get { measuring.connectDuration }
+        set { measuring.connectDuration = newValue }
+    }
+    
+    @objc public var sslDuration: UInt {
+        get { measuring.sslDuration }
+        set { measuring.sslDuration = newValue }
+    }
+    
+    @objc public var dnsDuration: UInt {
+        get { measuring.dnsDuration }
+        set { measuring.dnsDuration = newValue }
+    }
+    
+    @objc public var redirectDuration: UInt {
+        get { measuring.redirectDuration }
+        set { measuring.redirectDuration = newValue }
+    }
+    
+    @objc public var firstByteDuration: UInt {
+        get { measuring.firstByteDuration }
+        set { measuring.firstByteDuration = newValue }
+    }
+    
+    @objc public var downloadDuration: UInt {
+        get { measuring.downloadDuration }
+        set { measuring.downloadDuration = newValue }
+    }
+    
+    public override init() {
+        self.measuring = AlibabaCloudResourceMeasuring()
+        super.init()
+    }
+    
+    @objc
+    public class func measure() -> AlibabaCloudResourceMeasure {
+        return AlibabaCloudResourceMeasure()
+    }
+}
+
