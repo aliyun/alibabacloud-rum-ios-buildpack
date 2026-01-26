@@ -17,7 +17,7 @@ import AlibabaCloudRUMSDK
 
 @objc
 public class AlibabaCloudRUM : NSObject {
-    private static let RUM_SDK_VERSION = "2.2.0-beta.1"
+    private static let RUM_SDK_VERSION = "2.2.0-beta.2"
     
     private static var env: String?
     private static var endpoint: String?
@@ -300,6 +300,11 @@ public class AlibabaCloudRUM : NSObject {
         )
     }
     
+    @objc
+    public static func setResourceProvider(_ provider: AlibabaCloudResourceProvider?) {
+        AlibabaCloudRUMSDK.setResourceSnapshotProvider(provider)
+    }
+    
     @objc(getDeviceId)
     public static func getDeviceId() -> String {
         return AlibabaCloudRUMSDK.deviceId()
@@ -372,11 +377,6 @@ public class AlibabaCloudTracingContext : NSObject {
     @objc
     public static func context(traceId: String, spanId: String, parentSpanId: String, sampled: Bool, tracingProtocol: AlibabaCloudTracingProtocol) -> AlibabaCloudTracingContext {
         return AlibabaCloudTracingContext(traceId: traceId, spanId: spanId, parentSpanId: parentSpanId, sampled: sampled, tracingProtocol: tracingProtocol)
-    }
-    
-    @objc
-    public static func setResourceProvider(_ provider: AlibabaCloudResourceProvider) {
-        AlibabaCloudRUMSDK.setResourceSnapshotProvider(provider)
     }
 }
 
