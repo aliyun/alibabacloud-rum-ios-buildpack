@@ -49,6 +49,52 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
 + (NSString *)generateSpanId:(AlibabaCloudTraceProtocol)traceProtocol;
 @end
 
+/// Protocol for providing filtered request/response snapshots for resource capture.
+///
+/// Implement this protocol to control which headers and body content are collected
+/// for network resource monitoring. This is an opt-in feature - snapshots are only
+/// captured when a provider is configured.
+///
+/// @note Return nil from any method to skip capturing that specific field.
+/// @note The SDK applies size limits: headers are truncated at 64KB, body at 150KB.
+/// @note You are responsible for filtering sensitive data (e.g., passwords, tokens)
+///       before returning values from these methods.
+@protocol AlibabaCloudResourceSnapshotProvider <NSObject>
+@required
+
+/// Returns filtered request headers to be captured.
+/// Called at request start time when the request is being sent.
+/// @param request The URL request being sent
+/// @return Dictionary of header name-value pairs to capture, or nil to skip
+- (NSDictionary<NSString *, NSString *> * _Nullable)requestHeadersForRequest:(NSURLRequest *)request;
+
+/// Returns filtered request body to be captured.
+/// Called at request start time when HTTPBody/HTTPBodyStream is still available.
+/// @param request The URL request being sent
+/// @return Request body string to capture, or nil to skip
+- (NSString * _Nullable)requestBodyForRequest:(NSURLRequest *)request;
+
+/// Returns filtered response headers to be captured.
+/// Called at request completion time.
+/// @param request The original URL request
+/// @param response The URL response (may be nil on error)
+/// @return Dictionary of header name-value pairs to capture, or nil to skip
+- (NSDictionary<NSString *, NSString *> * _Nullable)responseHeadersForRequest:(NSURLRequest *)request
+                                                                     response:(NSURLResponse * _Nullable)response;
+
+/// Returns filtered response body to be captured.
+/// Called at request completion time with accumulated response data.
+/// @param request The original URL request
+/// @param response The URL response (may be nil on error)
+/// @param data The accumulated response body data (may be nil)
+/// @param error The error if request failed (may be nil on success)
+/// @return Response body string to capture, or nil to skip
+- (NSString * _Nullable)responseBodyForRequest:(NSURLRequest *)request
+                                      response:(NSURLResponse * _Nullable)response
+                                          data:(NSData * _Nullable)data
+                                         error:(NSError * _Nullable)error;
+@end
+
 @interface AlibabaCloudResourceMeasuring : NSObject
 @property(atomic, assign) NSUInteger duration;
 @property(atomic, assign) NSUInteger size;
@@ -68,6 +114,10 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
 + (BOOL)start:(NSString *)configAddress workspace:(NSString *)workspace serviceId:(NSString *)serviceId;
 + (BOOL)stop;
 + (BOOL)isStarted;
+
+/// Sets the resource snapshot provider. This method should be called before `start` is invoked.
+/// - Parameter provider: The provider instance for request/response snapshots.
++ (void)setResourceSnapshotProvider:(id<AlibabaCloudResourceSnapshotProvider> _Nullable)provider;
 
 #pragma mark - Custom -
 + (void)setCustomEvent:(NSString *)name
@@ -144,7 +194,8 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
                     errorCode:(NSInteger)errorCode
                  errorMessage:(NSString *)errorMessage
                requestHeaders:(NSDictionary *)requestHeaders
-              responseHeaders:(NSDictionary *)responseHeaders;
+              responseHeaders:(NSDictionary *)responseHeaders
+                    snapshots:(NSString * _Nullable)snapshots;
 + (void)flutterReportView:(NSString *)viewId
                  loadTime:(NSInteger)loadTime
                     enter:(BOOL)enter

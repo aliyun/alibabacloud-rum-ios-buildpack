@@ -373,6 +373,11 @@ public class AlibabaCloudTracingContext : NSObject {
     public static func context(traceId: String, spanId: String, parentSpanId: String, sampled: Bool, tracingProtocol: AlibabaCloudTracingProtocol) -> AlibabaCloudTracingContext {
         return AlibabaCloudTracingContext(traceId: traceId, spanId: spanId, parentSpanId: parentSpanId, sampled: sampled, tracingProtocol: tracingProtocol)
     }
+    
+    @objc
+    public static func setResourceProvider(_ provider: AlibabaCloudResourceProvider) {
+        AlibabaCloudRUMSDK.setResourceSnapshotProvider(provider)
+    }
 }
 
 @objc
@@ -466,3 +471,5 @@ public class AlibabaCloudResourceMeasure: NSObject {
     }
 }
 
+@objc(AlibabaCloudResourceProvider)
+public protocol AlibabaCloudResourceProvider: AlibabaCloudResourceSnapshotProvider {}
