@@ -200,10 +200,13 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
                  loadTime:(NSInteger)loadTime
                     enter:(BOOL)enter
                      name:(NSString *)name
-                   method:(NSString *)method;
+                   method:(NSString *)method
+                      map:(NSDictionary *)map;
 + (void)flutterReportAction:(NSString *)type
                        name:(NSString *)name
                        info:(NSString *)info;
++ (void)flutterReportLongTask:(NSString *)message
+                        stack:(NSString *)stack;
 + (NSDictionary *)getNetworkTraceConfig;
 
 #ifdef ALR_TEST

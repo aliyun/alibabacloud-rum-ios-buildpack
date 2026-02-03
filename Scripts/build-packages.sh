@@ -36,6 +36,7 @@ popd
 # https://forums.developer.apple.com/forums/thread/123253
 pushd ./build/AlibabaCloudRUM.xcframework
 find . -name "*.swiftinterface" -exec sed -i '' 's/AlibabaCloudRUM\.//g' {} \;
+find . -name "*.swiftinterface" -exec sed -i '' 's/AlibabaCloudRUMSDK\.//g' {} \;
 popd
 
 #codesign --timestamp -v --sign "iPhone Distribution: Taobao (China) Software CO.,LTD" ./build/AliyunLogNetworkDiagnosis.xcframework
