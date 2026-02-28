@@ -43,7 +43,7 @@ popd
 
 pushd build
 # zip distributable sdk
-zip -q -r AlibabaCloudRUM-iOS-${VERSION}-$(date "+%Y%m%d_%H%M").zip *
+zip -q -r AlibabaCloudRUM-iOS-${VERSION}-$(date "+%Y%m%d_%H%M").library.zip *
 popd
 
 popd
