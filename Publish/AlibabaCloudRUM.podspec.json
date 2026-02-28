@@ -1,0 +1,28 @@
+{
+  "name": "AlibabaCloudRUM",
+  "version": "2.2.1",
+  "summary": "AlibabaCloudRUM",
+  "description": "AlibabaCloud RUM SDK",
+  "homepage": "https://help.aliyun.com/zh/arms/user-experience-monitoring/access-to-ios-applications",
+  "license": {
+    "text": "           Alibaba-INC copyright\n",
+    "type": "Copyright"
+  },
+  "authors": {
+    "yulong.gyl": "yulong.gyl@alibaba-inc.com"
+  },
+  "platforms": {
+    "ios": "12.0"
+  },
+  "source": {
+    "http": "http://mtl.alibaba-inc.com/oss/mupp/12350651/build/lipo/AlibabaCloudRUMSDK.library.zip"
+  },
+  "libraries": [
+      "z",
+      "c++"
+  ],
+  "vendored_frameworks": [
+    "AlibabaCloudRUMSDK.xcframework",
+    "AlibabaCloudRUM.xcframework"
+  ]
+}
