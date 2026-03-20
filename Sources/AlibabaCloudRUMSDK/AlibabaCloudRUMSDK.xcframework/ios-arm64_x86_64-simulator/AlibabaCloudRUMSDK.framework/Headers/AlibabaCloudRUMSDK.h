@@ -144,6 +144,30 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
                      tracing:(AlibabaCloudTraceContext * _Nullable)tracing
                    measuring:(AlibabaCloudResourceMeasuring * _Nullable)measuring;
 
+#pragma mark - Common -
++ (void)reportView:(NSString *)viewId
+          loadTime:(NSInteger)loadTime
+             enter:(BOOL)enter
+              name:(NSString *)name 
+            method:(NSString *)method
+               map:(NSDictionary *)map
+              type:(NSString *)type;
++ (void)reportException:(NSString *)exceptionType
+                causeBy:(NSString *)causeBy
+              errorDump:(NSString *)errorDump
+               language:(NSString * _Nullable)language;
++ (void)reportResource:(NSURL *)url
+                method:(NSString *)method
+           connectTime:(NSInteger)connectTime
+          responseTime:(NSInteger)responseTime
+                  type:(NSString *)type
+      responseDataSize:(NSInteger)responseDataSize
+             errorCode:(NSInteger)errorCode
+          errorMessage:(NSString *)errorMessage
+        requestHeaders:(NSDictionary *)requestHeaders
+       responseHeaders:(NSDictionary *)responseHeaders
+             snapshots:(NSString * _Nullable)snapshots;
+
 #pragma mark - Extra Info -
 + (void)addExtraInfo:(NSDictionary<NSString *, id> *)extraInfo;
 + (void)setExtraInfo:(NSDictionary<NSString *, id> *)extraInfo;
