@@ -151,7 +151,7 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
               name:(NSString *)name 
             method:(NSString *)method
                map:(NSDictionary *)map
-              type:(NSString *)type;
+              type:(NSString * _Nullable)type;
 + (void)reportException:(NSString *)exceptionType
                 causeBy:(NSString *)causeBy
               errorDump:(NSString *)errorDump
