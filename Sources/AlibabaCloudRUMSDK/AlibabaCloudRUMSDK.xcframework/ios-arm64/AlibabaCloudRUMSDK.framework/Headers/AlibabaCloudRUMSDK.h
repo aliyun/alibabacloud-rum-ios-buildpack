@@ -25,6 +25,30 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
     AlibabaCloud_SkywalkingV3
 };
 
+#pragma mark - Module Switch -
+
+/// Bitmask identifying capture modules that can be locally enabled or disabled
+/// before SDK initialization.
+///
+/// Use with `+[AlibabaCloudRUMSDK disableModules:]` and
+/// `+[AlibabaCloudRUMSDK enableModules:]`.
+typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
+    AlibabaCloudRUMModuleNone         = 0,
+    AlibabaCloudRUMModuleCrash        = 1 << 0,
+    AlibabaCloudRUMModuleNetwork      = 1 << 1,   // Controls both URLSession and URLConnection
+    AlibabaCloudRUMModuleView         = 1 << 2,
+    AlibabaCloudRUMModuleAction       = 1 << 3,
+    AlibabaCloudRUMModuleWebView      = 1 << 4,   // WKWebView / H5
+    AlibabaCloudRUMModuleLongTask     = 1 << 5,
+    AlibabaCloudRUMModuleAppLaunch    = 1 << 6,
+    AlibabaCloudRUMModuleAppState     = 1 << 7,
+    AlibabaCloudRUMModuleNetState     = 1 << 8,
+    AlibabaCloudRUMModuleCustomEvent  = 1 << 9,
+    AlibabaCloudRUMModuleCustomLog    = 1 << 10,
+    AlibabaCloudRUMModuleCustomMetric = 1 << 11,
+    AlibabaCloudRUMModuleAll          = (1 << 12) - 1
+};
+
 @interface AlibabaCloudTraceContext : NSObject
 + (instancetype)contextWithTraceId:(NSString *)traceId
                             spanId:(NSString *)spanId
@@ -115,6 +139,23 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
 + (BOOL)stop;
 + (BOOL)isStarted;
 
+#pragma mark - Module Switch -
+
+/// Locally disables the specified capture modules. Must be called before `start`.
+/// Local disable takes priority over remote configuration enable.
+/// Multiple calls accumulate; idempotent for the same module.
++ (void)disableModules:(AlibabaCloudRUMModule)modules;
+
+/// Locally enables the specified capture modules. Must be called before `start`.
+/// Local enable overrides remote configuration disable.
+/// Multiple calls accumulate; idempotent for the same module.
++ (void)enableModules:(AlibabaCloudRUMModule)modules;
+
+/// Returns the current local module override mask.
+/// Disabled modules have their bit cleared (0); enabled or unset modules have bit set (1).
+/// Note: This reflects local overrides only, not the final effective state.
++ (AlibabaCloudRUMModule)moduleStates;
+
 /// Sets the resource snapshot provider. This method should be called before `start` is invoked.
 /// - Parameter provider: The provider instance for request/response snapshots.
 + (void)setResourceSnapshotProvider:(id<AlibabaCloudResourceSnapshotProvider> _Nullable)provider;
@@ -202,6 +243,19 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
 /// - Parameter channel: The channel string to set for the app.
 + (void)setChannel:(NSString *)channel;
 
+#pragma mark - Swizzle Class Name Exclusion -
+/// Adds a class name pattern to the swizzle exclusion set.
+/// Classes whose name contains the given pattern will be skipped during
+/// UIViewController subclass discovery, preventing NSClassFromString from
+/// triggering Swift metadata accessors that may crash on older OS versions.
+/// This method should be called before `start` is invoked.
+/// - Parameter classNamePattern: A substring to match against class names.
++ (void)addSwizzleClassNameExclude:(NSString *)classNamePattern;
+/// Sets the complete swizzle class name exclusion set.
+/// This method should be called before `start` is invoked.
+/// - Parameter excludes: A set of substrings to match against class names.
++ (void)setSwizzleClassNameExcludes:(NSSet<NSString *> *)excludes;
+
 #pragma mark - Flutter -
 + (void)flutterReportException:(NSString *)exceptionType
                        causeBy:(NSString *)causeBy
@@ -246,11 +300,21 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
                customLog:(BOOL)customLog
              customEvent:(BOOL)customEvent
             customMetric:(BOOL)customMetric
-                 battery:(BOOL)battery
+               battery:(BOOL)battery
               skywalking:(BOOL)skywalking
                      w3c:(BOOL)w3c
          tracingSampling:(BOOL)tracingSampling;
 + (void)setTesting:(BOOL)testing;
++ (NSDictionary<NSString *, id> *)testingProbeStatus;
++ (NSDictionary<NSString *, id> *)testingProbeReset:(NSString *)scenarioId
+                                            variant:(nullable NSString *)variant;
++ (NSDictionary<NSString *, id> *)testingProbeInvoke:(NSString *)scenarioId
+                                             action:(NSString *)action;
++ (NSDictionary<NSString *, id> *)testingProbeSpans:(NSString *)runId
+                                          eventType:(nullable NSString *)eventType
+                                            variant:(nullable NSString *)variant
+                                              limit:(nullable NSNumber *)limit
+                                             offset:(nullable NSNumber *)offset;
 #endif
 @end
 

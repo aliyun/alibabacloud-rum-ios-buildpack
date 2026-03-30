@@ -49,27 +49,62 @@ public class AlibabaCloudRUM : NSObject {
     
     /// 禁止检查某个类
     /// @note 需在探针启动前调用。**请谨慎使用**
+    @available(*,
+                deprecated,
+                renamed: "excludeClassFromTracking(_:)",
+                message: "This method has been renamed. Please use excludeClassFromTracking(_:) instead.")
     @objc(disableInspectClass:)
     public static func disableInspectClass(_ className: String) {
-        // not support now
+        Self.excludeClassFromTracking(className)
+    }
+    
+    /// 将指定类名加入 swizzle 排除集合，匹配到的类将跳过自动检测。
+    /// @note 需在 `start(_:)` 方法调用之前设置。
+    @objc(excludeClassFromTracking:)
+    public static func excludeClassFromTracking(_ className: String) {
+        AlibabaCloudRUMSDK.addSwizzleClassNameExclude(className)
     }
     
     /// 开启/关闭电量模块。
     /// 默认为关闭，需要在start方法调用之前设置
     /// - Parameters:
     ///   - enable:  是否开启
+    @available(*, deprecated)
     @objc(enableBattery:)
     public static func enableBattery(_ enable: Bool) {
         
     }
     
+    // MARK: ===== module switch =====
+
+    /// 禁用指定的采集模块。需在 start 之前调用。
+    /// 本地禁用优先于远端配置的启用。多次调用会累积；对同一模块幂等。
+    /// - Parameter module: 要禁用的模块
+    @objc(disableModule:)
+    public static func disableModule(_ module: AlibabaCloudModule) {
+        AlibabaCloudRUMSDK.disableModules(AlibabaCloudRUMModule(rawValue: 1 << UInt(module.rawValue)))
+    }
+
+    /// 启用指定的采集模块。需在 start 之前调用。
+    /// 本地启用会覆盖远端配置的禁用。多次调用会累积；对同一模块幂等。
+    /// - Parameter module: 要启用的模块
+    @objc(enableModule:)
+    public static func enableModule(_ module: AlibabaCloudModule) {
+        AlibabaCloudRUMSDK.enableModules(AlibabaCloudRUMModule(rawValue: 1 << UInt(module.rawValue)))
+    }
+
     /// 开启/关闭 webview 模块。
-    /// 默认为开启，在需要时调用即可
+    /// 默认为开启，需要在 start 之前调用。
     /// - Parameters:
     ///   - enable: 是否开启
+    @available(*, deprecated, message: "Use disableModule(.webView) / enableModule(.webView) instead.")
     @objc(enableTrackingWebView:)
     public static func enableTrackingWebView(_ enable: Bool) {
-        // not support now
+        if enable {
+            enableModule(.webView)
+        } else {
+            disableModule(.webView)
+        }
     }
     
     /// 启动SDK
@@ -469,6 +504,22 @@ public class AlibabaCloudResourceMeasure: NSObject {
     public class func measure() -> AlibabaCloudResourceMeasure {
         return AlibabaCloudResourceMeasure()
     }
+}
+
+@objc(AlibabaCloudModule)
+public enum AlibabaCloudModule: Int {
+    case crash        = 0
+    case network      = 1
+    case view         = 2
+    case action       = 3
+    case webView      = 4
+    case longTask     = 5
+    case appLaunch    = 6
+    case appState     = 7
+    case netState     = 8
+    case customEvent  = 9
+    case customLog    = 10
+    case customMetric = 11
 }
 
 @objc(AlibabaCloudResourceProvider)
