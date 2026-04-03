@@ -17,7 +17,7 @@ import AlibabaCloudRUMSDK
 
 @objc
 public class AlibabaCloudRUM : NSObject {
-    private static let RUM_SDK_VERSION = "2.2.5-beta.1"
+    private static let RUM_SDK_VERSION = "2.2.5"
     
     private static var env: String?
     private static var endpoint: String?
