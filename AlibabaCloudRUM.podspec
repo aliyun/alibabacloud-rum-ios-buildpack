@@ -4,7 +4,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'AlibabaCloudRUM'
-    s.version          = "2.2.5"
+    s.version          = "2.2.6-beta.1"
     s.summary          = 'AlibabaCloud RUM service for iOS.'
 
     s.description      = <<-DESC
@@ -23,9 +23,9 @@ Pod::Spec.new do |s|
 
     s.requires_arc  = true
     s.libraries = 'z', "c++", "resolv"
-    s.swift_version = "5.0"
     s.vendored_frameworks = 'Sources/AlibabaCloudRUMSDK/AlibabaCloudRUMSDK.xcframework'
-    s.source_files = 'Sources/AlibabaCloudRUM/**/*.{m,h,swift}'
+    s.source_files = 'Sources/AlibabaCloudRUM/**/*.{m,h}'
+    s.public_header_files = 'Sources/AlibabaCloudRUM/include/**/*.h'
     s.pod_target_xcconfig = {
         'OTHER_LDFLAGS' => '-ObjC'
     }

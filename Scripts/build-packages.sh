@@ -14,7 +14,7 @@ VERSION=$(cat VERSION)
 echo "version: $VERSION"
 
 # rewrite RUM_SDK_VERSION
-sed -i '' "s/\(private static let RUM_SDK_VERSION = \).*/\1\"$VERSION\"/g" Sources/AlibabaCloudRUM/AlibabaCloudRUM.swift
+sed -i '' "s/\(static NSString \*const RUM_SDK_VERSION = @\).*/\1\"$VERSION\";/g" Sources/AlibabaCloudRUM/AlibabaCloudRUM.m
 
 pushd build
 # create version readable txt file
@@ -32,12 +32,6 @@ popd
 #codesign --timestamp -v --sign "iPhone Distribution: Taobao (China) Software CO.,LTD" ./build/AliyunLogProducer.xcframework
 
 #sh build-networkdiagnosis.sh
-# remove URLSessionInstrumentation. from .swiftinterface files to remove the URLSessionInstrumentation module references.
-# https://forums.developer.apple.com/forums/thread/123253
-pushd ./build/AlibabaCloudRUM.xcframework
-find . -name "*.swiftinterface" -exec sed -i '' 's/AlibabaCloudRUM\.//g' {} \;
-find . -name "*.swiftinterface" -exec sed -i '' 's/AlibabaCloudRUMSDK\.//g' {} \;
-popd
 
 #codesign --timestamp -v --sign "iPhone Distribution: Taobao (China) Software CO.,LTD" ./build/AliyunLogNetworkDiagnosis.xcframework
 

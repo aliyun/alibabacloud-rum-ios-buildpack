@@ -23,9 +23,7 @@ let package = Package(
                 "AlibabaCloudRUMSDK"
             ],
             path: "Sources/AlibabaCloudRUM",
-//            cSettings: [
-//                .unsafeFlags(["-ObjC"])
-//            ],
+            publicHeadersPath: "include",
             linkerSettings: [
                 .linkedLibrary("z"),
                 .linkedLibrary("c++"),
