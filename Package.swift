@@ -46,8 +46,14 @@ let package = Package(
             path: "Sources/AlibabaCloudRUMSDK/AlibabaCloudRUMSDK.xcframework"
         ),
         .testTarget(
-            name: "OpenRUMTests",
-            path: "Tests/OpenRUMTests"
+            name: "AlibabaCloudRUMSwiftTests",
+            dependencies: ["AlibabaCloudRUM"],
+            path: "Tests/AlibabaCloudRUMSwiftTests"
+        ),
+        .testTarget(
+            name: "AlibabaCloudRUMObjCTests",
+            dependencies: ["AlibabaCloudRUM"],
+            path: "Tests/AlibabaCloudRUMObjCTests"
         )
     ]
 )
