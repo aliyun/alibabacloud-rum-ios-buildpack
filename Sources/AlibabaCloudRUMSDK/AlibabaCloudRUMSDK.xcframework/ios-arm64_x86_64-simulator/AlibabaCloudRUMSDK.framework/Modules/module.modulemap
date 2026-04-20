@@ -4,8 +4,3 @@ framework module AlibabaCloudRUMSDK {
 
   module * { export * }
 }
-
-module AlibabaCloudRUMSDK.Swift {
-  header "AlibabaCloudRUMSDK-Swift.h"
-  requires objc
-}

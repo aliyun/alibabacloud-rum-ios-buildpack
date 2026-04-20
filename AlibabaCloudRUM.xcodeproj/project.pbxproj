@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		F816A4C62DAE5B180010DA32 /* AlibabaCloudRUMSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F816A4C42DAE5B180010DA32 /* AlibabaCloudRUMSDK.xcframework */; };
-		F85BAE672C9516DE00EB1ACB /* AlibabaCloudRUM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85BAE622C9516DE00EB1ACB /* AlibabaCloudRUM.swift */; };
+		A10000012DAF000000000001 /* AlibabaCloudRUM.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000022DAF000000000002 /* AlibabaCloudRUM.m */; };
+		A10000032DAF000000000003 /* AlibabaCloudRUM.h in Headers */ = {isa = PBXBuildFile; fileRef = A10000042DAF000000000004 /* AlibabaCloudRUM.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F85BAE802C9517E800EB1ACB /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F85BAE7F2C9517E800EB1ACB /* libc++.tbd */; };
 		F85BAE822C9517EF00EB1ACB /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F85BAE812C9517EF00EB1ACB /* libresolv.tbd */; };
 		F8C365EB2CF6C9C100E17CFE /* AlibabaCloudRUMBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = F8C365DB2CF6C8DA00E17CFE /* AlibabaCloudRUMBridge.m */; };
@@ -40,7 +41,8 @@
 /* Begin PBXFileReference section */
 		F816A4C42DAE5B180010DA32 /* AlibabaCloudRUMSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = AlibabaCloudRUMSDK.xcframework; sourceTree = "<group>"; };
 		F85BAE552C9516BE00EB1ACB /* AlibabaCloudRUM.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AlibabaCloudRUM.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F85BAE622C9516DE00EB1ACB /* AlibabaCloudRUM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlibabaCloudRUM.swift; sourceTree = "<group>"; };
+		A10000022DAF000000000002 /* AlibabaCloudRUM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlibabaCloudRUM.m; sourceTree = "<group>"; };
+		A10000042DAF000000000004 /* AlibabaCloudRUM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlibabaCloudRUM.h; sourceTree = "<group>"; };
 		F85BAE6A2C9516EF00EB1ACB /* build-packages.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-packages.sh"; sourceTree = "<group>"; };
 		F85BAE6B2C9516EF00EB1ACB /* build-alibabcloud-rum.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-alibabcloud-rum.sh"; sourceTree = "<group>"; };
 		F85BAE6C2C9516EF00EB1ACB /* build-xcframework.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-xcframework.sh"; sourceTree = "<group>"; };
@@ -126,7 +128,8 @@
 		F85BAE612C9516DE00EB1ACB /* AlibabaCloudRUM */ = {
 			isa = PBXGroup;
 			children = (
-				F85BAE622C9516DE00EB1ACB /* AlibabaCloudRUM.swift */,
+				A10000052DAF000000000005 /* include */,
+				A10000022DAF000000000002 /* AlibabaCloudRUM.m */,
 			);
 			path = AlibabaCloudRUM;
 			sourceTree = "<group>";
@@ -150,6 +153,14 @@
 				F85BAE7D2C9517DF00EB1ACB /* libz.tbd */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A10000052DAF000000000005 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				A10000042DAF000000000004 /* AlibabaCloudRUM.h */,
+			);
+			path = include;
 			sourceTree = "<group>";
 		};
 		F8C365D82CF6C8DA00E17CFE /* AlibabaCloudRUMBridge */ = {
@@ -176,6 +187,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000032DAF000000000003 /* AlibabaCloudRUM.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,7 +281,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F85BAE672C9516DE00EB1ACB /* AlibabaCloudRUM.swift in Sources */,
+				A10000012DAF000000000001 /* AlibabaCloudRUM.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,7 +309,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -443,8 +454,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -484,8 +493,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};

@@ -23,9 +23,7 @@ let package = Package(
                 "AlibabaCloudRUMSDK"
             ],
             path: "Sources/AlibabaCloudRUM",
-//            cSettings: [
-//                .unsafeFlags(["-ObjC"])
-//            ],
+            publicHeadersPath: "include",
             linkerSettings: [
                 .linkedLibrary("z"),
                 .linkedLibrary("c++"),
@@ -48,8 +46,14 @@ let package = Package(
             path: "Sources/AlibabaCloudRUMSDK/AlibabaCloudRUMSDK.xcframework"
         ),
         .testTarget(
-            name: "OpenRUMTests",
-            path: "Tests/OpenRUMTests"
+            name: "AlibabaCloudRUMSwiftTests",
+            dependencies: ["AlibabaCloudRUM"],
+            path: "Tests/AlibabaCloudRUMSwiftTests"
+        ),
+        .testTarget(
+            name: "AlibabaCloudRUMObjCTests",
+            dependencies: ["AlibabaCloudRUM"],
+            path: "Tests/AlibabaCloudRUMObjCTests"
         )
     ]
 )
