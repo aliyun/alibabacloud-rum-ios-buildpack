@@ -305,6 +305,10 @@ typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
                      w3c:(BOOL)w3c
          tracingSampling:(BOOL)tracingSampling;
 + (void)setTesting:(BOOL)testing;
+/// Resets SDK-managed global state to a pre-start baseline within the same process.
+/// Stops services, clears global flags, and resets options/device/config state.
+/// Does NOT restore swizzled method implementations; restore swizzle baselines separately.
++ (void)testingResetGlobalState;
 + (NSDictionary<NSString *, id> *)testingProbeStatus;
 + (NSDictionary<NSString *, id> *)testingProbeReset:(NSString *)scenarioId
                                             variant:(nullable NSString *)variant;
