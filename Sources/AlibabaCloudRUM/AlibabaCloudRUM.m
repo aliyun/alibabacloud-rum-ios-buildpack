@@ -337,6 +337,18 @@ static NSString *ACEnvironmentStringFromEnv(AlibabaCloudEnv env) {
     return [AlibabaCloudRUMSDK deviceId];
 }
 
++ (NSString * _Nullable)getActiveSessionId {
+    return [AlibabaCloudRUMSDK getActiveSessionId];
+}
+
++ (NSString * _Nullable)getLastActiveTraceId {
+    return [AlibabaCloudRUMSDK getLastActiveTraceId];
+}
+
++ (NSString * _Nullable)getLastActiveSpanId {
+    return [AlibabaCloudRUMSDK getLastActiveSpanId];
+}
+
 @end
 
 #pragma mark - AlibabaCloudTracingContext

@@ -242,6 +242,15 @@ typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
 /// Sets the app version. This method should be called before `start` is invoked.
 /// - Parameter channel: The channel string to set for the app.
 + (void)setChannel:(NSString *)channel;
+/// Get the active session id.
+/// - Returns: The active session id, nullable.
++ (NSString * _Nullable)getActiveSessionId;
+/// Get the last active trace id.
+/// - Returns: The active trace id, nullable.
++ (NSString * _Nullable)getLastActiveTraceId;
+/// Get the last active span id.
+/// - Returns: The active span id, nullable.
++ (NSString * _Nullable)getLastActiveSpanId;
 
 #pragma mark - Swizzle Class Name Exclusion -
 /// Adds a class name pattern to the swizzle exclusion set.

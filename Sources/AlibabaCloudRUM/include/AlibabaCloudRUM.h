@@ -190,6 +190,16 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTracingProtocol) {
 
 + (NSString *)getDeviceId __attribute__((warn_unused_result));
 
+/// Get the active session id.
+/// - Returns: The active session id, nullable.
++ (NSString * _Nullable)getActiveSessionId;
+/// Get the last active trace id.
+/// - Returns: The active trace id, nullable.
++ (NSString * _Nullable)getLastActiveTraceId;
+/// Get the last active span id.
+/// - Returns: The active span id, nullable.
++ (NSString * _Nullable)getLastActiveSpanId;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 @end
