@@ -32,6 +32,7 @@ typedef NS_ENUM(NSInteger, AlibabaCloudModule) {
     AlibabaCloudModuleCustomEvent  = 9,
     AlibabaCloudModuleCustomLog    = 10,
     AlibabaCloudModuleCustomMetric = 11,
+    AlibabaCloudModuleOOM = 12,
 };
 
 typedef NS_ENUM(NSInteger, AlibabaCloudEnv) {
@@ -115,6 +116,7 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTracingProtocol) {
     __attribute__((deprecated("This method has been renamed. Please use setDebuggable(_:) instead.")));
 
 + (void)setDebuggable:(BOOL)debuggable NS_SWIFT_NAME(setDebuggable(_:));
++ (void)setSelfMonitorEnabled:(BOOL)enabeld NS_SWIFT_NAME(setSelfMonitorEnabled(_:));
 + (void)stopSDK NS_SWIFT_NAME(stopSDK());
 
 + (void)setCustomException:(NSString *)exceptionType

@@ -177,6 +177,10 @@ static NSString *ACEnvironmentStringFromEnv(AlibabaCloudEnv env) {
     [AlibabaCloudRUMSDK setDebuggable:debuggable];
 }
 
++ (void)setSelfMonitorEnabled:(BOOL)enabeld {
+    [AlibabaCloudRUMSDK setSelfMonitorEnabled:enabeld];
+}
+
 + (void)stopSDK {
     [AlibabaCloudRUMSDK stop];
 }

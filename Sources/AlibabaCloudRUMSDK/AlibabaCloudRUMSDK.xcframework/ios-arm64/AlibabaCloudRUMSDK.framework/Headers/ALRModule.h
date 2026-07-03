@@ -35,7 +35,8 @@ typedef NS_OPTIONS(NSUInteger, ALRModule) {
     ALRModuleCustomEvent   = 1 << 9,
     ALRModuleCustomLog     = 1 << 10,
     ALRModuleCustomMetric  = 1 << 11,
-    ALRModuleAll           = (1 << 12) - 1
+    ALRModuleOOM NS_SWIFT_NAME(oom) = 1 << 12,
+    ALRModuleAll           = (1 << 13) - 1
 };
 
 NS_ASSUME_NONNULL_END

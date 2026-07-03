@@ -46,7 +46,8 @@ typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
     AlibabaCloudRUMModuleCustomEvent  = 1 << 9,
     AlibabaCloudRUMModuleCustomLog    = 1 << 10,
     AlibabaCloudRUMModuleCustomMetric = 1 << 11,
-    AlibabaCloudRUMModuleAll          = (1 << 12) - 1
+    AlibabaCloudRUMModuleOOM NS_SWIFT_NAME(oom) = 1 << 12,
+    AlibabaCloudRUMModuleAll          = (1 << 13) - 1
 };
 
 @interface AlibabaCloudTraceContext : NSObject
@@ -138,6 +139,7 @@ typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
 + (BOOL)start:(NSString *)configAddress workspace:(NSString *)workspace serviceId:(NSString *)serviceId;
 + (BOOL)stop;
 + (BOOL)isStarted;
++ (void)setSelfMonitorEnabled:(BOOL)enabled;
 
 #pragma mark - Module Switch -
 
