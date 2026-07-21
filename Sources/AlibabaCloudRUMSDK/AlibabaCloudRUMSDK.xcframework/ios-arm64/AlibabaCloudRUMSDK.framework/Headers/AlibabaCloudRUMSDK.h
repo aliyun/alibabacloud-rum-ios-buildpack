@@ -320,16 +320,6 @@ typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
 /// Stops services, clears global flags, and resets options/device/config state.
 /// Does NOT restore swizzled method implementations; restore swizzle baselines separately.
 + (void)testingResetGlobalState;
-+ (NSDictionary<NSString *, id> *)testingProbeStatus;
-+ (NSDictionary<NSString *, id> *)testingProbeReset:(NSString *)scenarioId
-                                            variant:(nullable NSString *)variant;
-+ (NSDictionary<NSString *, id> *)testingProbeInvoke:(NSString *)scenarioId
-                                             action:(NSString *)action;
-+ (NSDictionary<NSString *, id> *)testingProbeSpans:(NSString *)runId
-                                          eventType:(nullable NSString *)eventType
-                                            variant:(nullable NSString *)variant
-                                              limit:(nullable NSNumber *)limit
-                                             offset:(nullable NSNumber *)offset;
 #endif
 @end
 
