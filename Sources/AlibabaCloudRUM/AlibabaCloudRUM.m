@@ -21,7 +21,7 @@
 static NSString * _Nullable _endpoint  = nil;
 static NSString * _Nullable _workspace = nil;
 static NSString * _Nullable _env       = nil;
-static NSString *const RUM_SDK_VERSION = @"2.3.2";
+static NSString *const RUM_SDK_VERSION = @"2.3.3";
 
 #pragma mark - Internal Class Extensions
 
