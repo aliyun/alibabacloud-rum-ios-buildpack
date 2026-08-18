@@ -17,7 +17,7 @@ import AlibabaCloudRUM
 
 final class AlibabaCloudRUMSwiftTests: XCTestCase {
 
-    // MARK: - Enum: AlibabaCloudModule (12 values)
+    // MARK: - Enum: AlibabaCloudModule
 
     func testModuleEnumValues() {
         XCTAssertEqual(AlibabaCloudModule.crash.rawValue, 0)
@@ -32,6 +32,18 @@ final class AlibabaCloudRUMSwiftTests: XCTestCase {
         XCTAssertEqual(AlibabaCloudModule.customEvent.rawValue, 9)
         XCTAssertEqual(AlibabaCloudModule.customLog.rawValue, 10)
         XCTAssertEqual(AlibabaCloudModule.customMetric.rawValue, 11)
+        XCTAssertEqual(AlibabaCloudModule.sessionReplay.rawValue, 13)
+    }
+
+    func testSessionReplayPrivacyEnumValues() {
+        XCTAssertEqual(AlibabaCloudTextAndInputPrivacy.maskAll.rawValue, 0)
+        XCTAssertEqual(AlibabaCloudTextAndInputPrivacy.maskAllInputs.rawValue, 1)
+        XCTAssertEqual(AlibabaCloudTextAndInputPrivacy.maskSensitiveInputs.rawValue, 2)
+        XCTAssertEqual(AlibabaCloudImagePrivacy.maskAll.rawValue, 0)
+        XCTAssertEqual(AlibabaCloudImagePrivacy.maskNonBundledOnly.rawValue, 1)
+        XCTAssertEqual(AlibabaCloudImagePrivacy.maskNone.rawValue, 2)
+        XCTAssertEqual(AlibabaCloudTouchPrivacy.hide.rawValue, 0)
+        XCTAssertEqual(AlibabaCloudTouchPrivacy.show.rawValue, 1)
     }
 
     // MARK: - Enum: Env (NS_SWIFT_NAME, 6 values)
@@ -165,6 +177,40 @@ final class AlibabaCloudRUMSwiftTests: XCTestCase {
 
     func testEnableModule() {
         AlibabaCloudRUM.enableModule(.crash)
+    }
+
+    // MARK: - Session Replay
+
+    func testSessionReplayConfigurationInitAndCopy() {
+        let configuration = AlibabaCloudSessionReplayConfiguration(
+            sampleRate: 50,
+            textAndInputPrivacy: .maskAllInputs,
+            imagePrivacy: .maskNonBundledOnly,
+            touchPrivacy: .show
+        )
+
+        XCTAssertEqual(configuration.sampleRate, 50)
+        XCTAssertEqual(configuration.textAndInputPrivacy, .maskAllInputs)
+        XCTAssertEqual(configuration.imagePrivacy, .maskNonBundledOnly)
+        XCTAssertEqual(configuration.touchPrivacy, .show)
+
+        let copy = configuration.copy(with: nil) as? AlibabaCloudSessionReplayConfiguration
+        XCTAssertNotNil(copy)
+        XCTAssertFalse(copy === configuration)
+        XCTAssertEqual(copy?.sampleRate, configuration.sampleRate)
+        XCTAssertEqual(copy?.textAndInputPrivacy, configuration.textAndInputPrivacy)
+        XCTAssertEqual(copy?.imagePrivacy, configuration.imagePrivacy)
+        XCTAssertEqual(copy?.touchPrivacy, configuration.touchPrivacy)
+    }
+
+    func testSessionReplayAPISurface() {
+        let start: () -> Bool = AlibabaCloudSessionReplay.start
+        let startWithConfiguration: (AlibabaCloudSessionReplayConfiguration) -> Bool =
+            AlibabaCloudSessionReplay.start
+        let stop: () -> Bool = AlibabaCloudSessionReplay.stop
+        let isStarted: () -> Bool = AlibabaCloudSessionReplay.isStarted
+
+        _ = (start, startWithConfiguration, stop, isStarted)
     }
 
     // MARK: - AlibabaCloudRUM: Swizzle & Class Tracking

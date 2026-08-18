@@ -496,3 +496,69 @@ static NSString *ACEnvironmentStringFromEnv(AlibabaCloudEnv env) {
 }
 
 @end
+
+#pragma mark - Session Replay
+@interface AlibabaCloudSessionReplayConfiguration()
+@property(nonatomic, strong) ALRSessionReplayConfiguration *configuration;
+@end
+
+@implementation AlibabaCloudSessionReplayConfiguration
+
++ (instancetype)configurationWithSampleRate:(NSUInteger)sampleRate
+                        textAndInputPrivacy:(AlibabaCloudTextAndInputPrivacy)textAndInputPrivacy
+                               imagePrivacy:(AlibabaCloudImagePrivacy)imagePrivacy
+                               touchPrivacy:(AlibabaCloudTouchPrivacy)touchPrivacy {
+    return [[AlibabaCloudSessionReplayConfiguration alloc] initWithSampleRate:sampleRate
+                                                          textAndInputPrivacy:textAndInputPrivacy
+                                                                 imagePrivacy:imagePrivacy
+                                                                 touchPrivacy:touchPrivacy];
+}
+
+- (instancetype)initWithSampleRate:(NSUInteger)sampleRate
+               textAndInputPrivacy:(AlibabaCloudTextAndInputPrivacy)textAndInputPrivacy
+                      imagePrivacy:(AlibabaCloudImagePrivacy)imagePrivacy
+                      touchPrivacy:(AlibabaCloudTouchPrivacy)touchPrivacy {
+    self = [super init];
+    if (self) {
+        _sampleRate = sampleRate;
+        _textAndInputPrivacy = textAndInputPrivacy;
+        _imagePrivacy = imagePrivacy;
+        _touchPrivacy = touchPrivacy;
+        _configuration = [[ALRSessionReplayConfiguration alloc] initWithSampleRate:sampleRate
+                                                               textAndInputPrivacy:(ALRSessionReplayTextAndInputPrivacy)textAndInputPrivacy
+                                                                      imagePrivacy:(ALRSessionReplayImagePrivacy)imagePrivacy
+                                                                      touchPrivacy:(ALRSessionReplayTouchPrivacy)touchPrivacy];
+    }
+
+    return self;
+}
+
+- (nonnull id)copyWithZone:(nullable NSZone *)zone {
+    return [[[self class] allocWithZone:zone]
+            initWithSampleRate:self.sampleRate
+            textAndInputPrivacy:self.textAndInputPrivacy
+            imagePrivacy:self.imagePrivacy
+            touchPrivacy:self.touchPrivacy];
+}
+
+@end
+
+@implementation AlibabaCloudSessionReplay
+
++ (BOOL)start {
+    return [ALRSessionReplay start];
+}
+
++ (BOOL)startWithConfiguration:(AlibabaCloudSessionReplayConfiguration *)configuration NS_SWIFT_NAME(start(_:)) {
+    return [ALRSessionReplay startWithConfiguration:configuration.configuration];
+}
+
++ (BOOL)stop {
+    return [ALRSessionReplay stop];
+}
+
++ (BOOL)isStarted {
+    return [ALRSessionReplay isStarted];
+}
+
+@end

@@ -35,6 +35,18 @@
     XCTAssertEqual(AlibabaCloudModuleCustomEvent, 9);
     XCTAssertEqual(AlibabaCloudModuleCustomLog, 10);
     XCTAssertEqual(AlibabaCloudModuleCustomMetric, 11);
+    XCTAssertEqual(AlibabaCloudModuleSessionReplay, 13);
+}
+
+- (void)testSessionReplayPrivacyEnumValues {
+    XCTAssertEqual(AlibabaCloudTextAndInputPrivacyMaskAll, 0u);
+    XCTAssertEqual(AlibabaCloudTextAndInputPrivacyMaskAllInputs, 1u);
+    XCTAssertEqual(AlibabaCloudTextAndInputPrivacyMaskSensitiveInputs, 2u);
+    XCTAssertEqual(AlibabaCloudImagePrivacyMaskAll, 0u);
+    XCTAssertEqual(AlibabaCloudImagePrivacyMaskNonBundledOnly, 1u);
+    XCTAssertEqual(AlibabaCloudImagePrivacyMaskNone, 2u);
+    XCTAssertEqual(AlibabaCloudTouchPrivacyHide, 0u);
+    XCTAssertEqual(AlibabaCloudTouchPrivacyShow, 1u);
 }
 
 - (void)testEnvEnumValues {
@@ -163,6 +175,54 @@
 
 - (void)testEnableModule {
     [AlibabaCloudRUM enableModule:AlibabaCloudModuleCrash];
+}
+
+#pragma mark - Session Replay
+
+- (void)testSessionReplayConfigurationInitAndCopy {
+    AlibabaCloudSessionReplayConfiguration *configuration =
+        [[AlibabaCloudSessionReplayConfiguration alloc]
+            initWithSampleRate:50
+            textAndInputPrivacy:AlibabaCloudTextAndInputPrivacyMaskAllInputs
+            imagePrivacy:AlibabaCloudImagePrivacyMaskNonBundledOnly
+            touchPrivacy:AlibabaCloudTouchPrivacyShow];
+
+    XCTAssertEqual(configuration.sampleRate, 50u);
+    XCTAssertEqual(configuration.textAndInputPrivacy,
+                   AlibabaCloudTextAndInputPrivacyMaskAllInputs);
+    XCTAssertEqual(configuration.imagePrivacy,
+                   AlibabaCloudImagePrivacyMaskNonBundledOnly);
+    XCTAssertEqual(configuration.touchPrivacy, AlibabaCloudTouchPrivacyShow);
+
+    AlibabaCloudSessionReplayConfiguration *copy = [configuration copy];
+    XCTAssertNotEqual(copy, configuration);
+    XCTAssertEqual(copy.sampleRate, configuration.sampleRate);
+    XCTAssertEqual(copy.textAndInputPrivacy, configuration.textAndInputPrivacy);
+    XCTAssertEqual(copy.imagePrivacy, configuration.imagePrivacy);
+    XCTAssertEqual(copy.touchPrivacy, configuration.touchPrivacy);
+}
+
+- (void)testSessionReplayConfigurationFactory {
+    AlibabaCloudSessionReplayConfiguration *configuration =
+        [AlibabaCloudSessionReplayConfiguration
+            configurationWithSampleRate:100
+            textAndInputPrivacy:AlibabaCloudTextAndInputPrivacyMaskSensitiveInputs
+            imagePrivacy:AlibabaCloudImagePrivacyMaskNone
+            touchPrivacy:AlibabaCloudTouchPrivacyHide];
+
+    XCTAssertEqual(configuration.sampleRate, 100u);
+    XCTAssertEqual(configuration.textAndInputPrivacy,
+                   AlibabaCloudTextAndInputPrivacyMaskSensitiveInputs);
+    XCTAssertEqual(configuration.imagePrivacy, AlibabaCloudImagePrivacyMaskNone);
+    XCTAssertEqual(configuration.touchPrivacy, AlibabaCloudTouchPrivacyHide);
+}
+
+- (void)testSessionReplayAPISurface {
+    XCTAssertTrue([AlibabaCloudSessionReplay respondsToSelector:@selector(start)]);
+    XCTAssertTrue([AlibabaCloudSessionReplay
+        respondsToSelector:@selector(startWithConfiguration:)]);
+    XCTAssertTrue([AlibabaCloudSessionReplay respondsToSelector:@selector(stop)]);
+    XCTAssertTrue([AlibabaCloudSessionReplay respondsToSelector:@selector(isStarted)]);
 }
 
 #pragma mark - Swizzle & Class Tracking

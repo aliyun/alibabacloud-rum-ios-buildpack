@@ -32,7 +32,8 @@ typedef NS_ENUM(NSInteger, AlibabaCloudModule) {
     AlibabaCloudModuleCustomEvent  = 9,
     AlibabaCloudModuleCustomLog    = 10,
     AlibabaCloudModuleCustomMetric = 11,
-    AlibabaCloudModuleOOM = 12,
+    AlibabaCloudModuleOOM           = 12,
+    AlibabaCloudModuleSessionReplay = 13,
 };
 
 typedef NS_ENUM(NSInteger, AlibabaCloudEnv) {
@@ -54,6 +55,71 @@ typedef NS_ENUM(NSInteger, AlibabaCloudTracingProtocol) {
     AlibabaCloudTracingProtocolW3C          NS_SWIFT_NAME(W3C)          = 0,
     AlibabaCloudTracingProtocolSkywalkingV3 NS_SWIFT_NAME(SkywalkingV3) = 1,
 };
+
+#pragma mark - Session Replay
+
+typedef NS_ENUM(NSUInteger, AlibabaCloudTextAndInputPrivacy) {
+    AlibabaCloudTextAndInputPrivacyMaskAll = 0,
+    AlibabaCloudTextAndInputPrivacyMaskAllInputs = 1,
+    AlibabaCloudTextAndInputPrivacyMaskSensitiveInputs = 2,
+};
+
+typedef NS_ENUM(NSUInteger, AlibabaCloudImagePrivacy) {
+    AlibabaCloudImagePrivacyMaskAll = 0,
+    AlibabaCloudImagePrivacyMaskNonBundledOnly = 1,
+    AlibabaCloudImagePrivacyMaskNone = 2,
+};
+
+typedef NS_ENUM(NSUInteger, AlibabaCloudTouchPrivacy) {
+    AlibabaCloudTouchPrivacyHide = 0,
+    AlibabaCloudTouchPrivacyShow = 1,
+};
+
+@interface AlibabaCloudSessionReplayConfiguration : NSObject<NSCopying>
+
+@property(nonatomic, assign, readonly) NSUInteger sampleRate;
+@property(nonatomic, assign, readonly) AlibabaCloudTextAndInputPrivacy textAndInputPrivacy;
+@property(nonatomic, assign, readonly) AlibabaCloudImagePrivacy imagePrivacy;
+@property(nonatomic, assign, readonly) AlibabaCloudTouchPrivacy touchPrivacy;
+
++ (instancetype)configurationWithSampleRate:(NSUInteger)sampleRate
+                        textAndInputPrivacy:(AlibabaCloudTextAndInputPrivacy)textAndInputPrivacy
+                               imagePrivacy:(AlibabaCloudImagePrivacy)imagePrivacy
+                               touchPrivacy:(AlibabaCloudTouchPrivacy)touchPrivacy;
+- (instancetype)initWithSampleRate:(NSUInteger)sampleRate
+               textAndInputPrivacy:(AlibabaCloudTextAndInputPrivacy)textAndInputPrivacy
+                      imagePrivacy:(AlibabaCloudImagePrivacy)imagePrivacy
+                      touchPrivacy:(AlibabaCloudTouchPrivacy)touchPrivacy NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
+@end
+
+@interface AlibabaCloudSessionReplay : NSObject
+
+/// Starts Session Replay with the latest remote sampling and privacy settings.
+/// The Session Replay module must have been enabled before RUM initialization.
+/// Calling this method again with the same configuration mode is idempotent.
+/// Call this method on the main thread; otherwise it returns NO.
++ (BOOL)start;
+
+/// Starts Session Replay with local sampling and privacy settings. Remote
+/// storage settings remain effective. A different configuration is rejected
+/// while recording; call `stop` before starting with new settings. Call this
+/// method on the main thread; otherwise it returns NO.
++ (BOOL)startWithConfiguration:(AlibabaCloudSessionReplayConfiguration *)configuration NS_SWIFT_NAME(start(_:));
+
+/// Stops accepting new replay input and returns without waiting for background
+/// sealing, durable handoff, or upload. Already accepted data remains eligible
+/// for normal asynchronous upload. Call this method on the main thread;
+/// otherwise it returns NO.
++ (BOOL)stop;
+
+/// Returns the latest explicit user intent, including a start pending an older
+/// generation's durable handoff. It does not indicate sampling or upload state.
++ (BOOL)isStarted;
+
+@end
 
 #pragma mark - Forward Declarations
 

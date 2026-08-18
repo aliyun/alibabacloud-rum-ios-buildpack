@@ -15,6 +15,7 @@
 	
 
 #import <Foundation/Foundation.h>
+#import <AlibabaCloudRUMSDK/ALRSessionReplay.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -47,6 +48,10 @@ typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
     AlibabaCloudRUMModuleCustomLog    = 1 << 10,
     AlibabaCloudRUMModuleCustomMetric = 1 << 11,
     AlibabaCloudRUMModuleOOM NS_SWIFT_NAME(oom) = 1 << 12,
+    AlibabaCloudRUMModuleSessionReplay = 1 << 13,
+    /// Legacy aggregate used by existing callers. It intentionally excludes
+    /// Session Replay. A complete `disableModules(All)` also disables Session
+    /// Replay as a fail-safe; `enableModules(All)` does not enable it.
     AlibabaCloudRUMModuleAll          = (1 << 13) - 1
 };
 
@@ -153,9 +158,10 @@ typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
 /// Multiple calls accumulate; idempotent for the same module.
 + (void)enableModules:(AlibabaCloudRUMModule)modules;
 
-/// Returns the current local module override mask.
-/// Disabled modules have their bit cleared (0); enabled or unset modules have bit set (1).
-/// Note: This reflects local overrides only, not the final effective state.
+/// Returns the current local module state mask.
+/// Legacy modules are enabled unless locally disabled. Session Replay appears only
+/// after its explicit opt-in bit is enabled.
+/// Note: This reflects local state only, not the final remote-config effective state.
 + (AlibabaCloudRUMModule)moduleStates;
 
 /// Sets the resource snapshot provider. This method should be called before `start` is invoked.

@@ -93,6 +93,17 @@
       "name": "custommetric",
       "enable": true,
       "sampling": 100.0
+    },
+    {
+      "name": "replay",
+      "enable": false,
+      "sampling": 100.0,
+      "storage": "logstore-rum",
+      "privacy": {
+        "textAndInput": "maskAll",
+        "image": "maskAll",
+        "touch": "hide"
+      }
     }
   ],
   "tracing": {
