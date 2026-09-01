@@ -19,6 +19,37 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - Error -
+
+/// Describes one non-fatal error reported through AlibabaCloudRUMSDK.
+///
+/// Name, message, and stacktrace identify the error. The remaining properties
+/// are optional source metadata and are omitted from telemetry when unset.
+@interface AlibabaCloudRUMErrorInfo : NSObject <NSCopying>
+
+@property(nonatomic, copy, readonly) NSString *name;
+@property(nonatomic, copy, readonly) NSString *message;
+@property(nonatomic, copy, readonly) NSString *stacktrace;
+
+@property(nonatomic, copy, nullable) NSString *subtype;
+@property(nonatomic, copy, nullable) NSString *source;
+@property(nonatomic, copy, nullable) NSString *file;
+/// Zero-based or one-based semantics are determined by the originating runtime.
+/// Only non-negative integer values are reported.
+@property(nonatomic, copy, nullable) NSNumber *line;
+/// Zero-based or one-based semantics are determined by the originating runtime.
+/// Only non-negative integer values are reported.
+@property(nonatomic, copy, nullable) NSNumber *column;
+
+- (instancetype)initWithName:(NSString *)name
+                      message:(NSString *)message
+                   stacktrace:(NSString *)stacktrace NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
+@end
+
 #pragma mark - Trace Support -
 
 typedef NS_ENUM(NSInteger, AlibabaCloudTraceProtocol) {
@@ -205,6 +236,8 @@ typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
                 causeBy:(NSString *)causeBy
               errorDump:(NSString *)errorDump
                language:(NSString * _Nullable)language;
+/// Reports one non-fatal error while preserving the active view and session.
++ (void)reportError:(AlibabaCloudRUMErrorInfo *)error;
 + (void)reportResource:(NSURL *)url
                 method:(NSString *)method
            connectTime:(NSInteger)connectTime
