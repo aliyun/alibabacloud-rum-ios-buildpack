@@ -16,6 +16,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AlibabaCloudRUMSDK/ALRSessionReplay.h>
+#import <AlibabaCloudRUMSDK/ALRSelfMonitorIntegration.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
