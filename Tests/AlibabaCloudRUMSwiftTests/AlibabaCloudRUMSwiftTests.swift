@@ -15,7 +15,24 @@
 import XCTest
 import AlibabaCloudRUM
 
+private final class SwiftEventInterceptor: NSObject, AlibabaCloudEventInterceptor {
+    func intercept(_ event: AlibabaCloudRUMEvent, context: AlibabaCloudEventContext) -> AlibabaCloudRUMEvent? {
+        if let custom = event as? AlibabaCloudCustomEvent {
+            let _: Bool = custom.setName("filtered")
+            let _: Bool = custom.setGroup("business")
+            let _: Bool = custom.setSnapshots("plain text")
+            let _: String? = custom.snapshots
+        }
+        return event
+    }
+}
+
 final class AlibabaCloudRUMSwiftTests: XCTestCase {
+    func testEventInterceptorAcceptsReplacementAndExplicitClear() {
+        XCTAssertTrue(AlibabaCloudRUM.setEventInterceptor(SwiftEventInterceptor()))
+        XCTAssertTrue(AlibabaCloudRUM.setEventInterceptor(SwiftEventInterceptor()))
+        XCTAssertTrue(AlibabaCloudRUM.setEventInterceptor(nil))
+    }
 
     // MARK: - Enum: AlibabaCloudModule
 

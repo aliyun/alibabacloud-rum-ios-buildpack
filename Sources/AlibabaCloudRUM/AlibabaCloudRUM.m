@@ -16,14 +16,38 @@
 #import "AlibabaCloudRUM.h"
 #import "AlibabaCloudRUMSDK/AlibabaCloudRUMSDK.h"
 
+_Static_assert((NSInteger)AlibabaCloudResourceSuccessUnknown == (NSInteger)ALRResourceSuccessUnknown,
+               "Resource unknown result must match the internal SDK");
+_Static_assert((NSInteger)AlibabaCloudResourceSuccessFailed == (NSInteger)ALRResourceSuccessFailed,
+               "Resource failed result must match the internal SDK");
+_Static_assert((NSInteger)AlibabaCloudResourceSuccessSuccess == (NSInteger)ALRResourceSuccessSuccess,
+               "Resource success result must match the internal SDK");
+
 #pragma mark - Static State
 
 static NSString * _Nullable _endpoint  = nil;
 static NSString * _Nullable _workspace = nil;
 static NSString * _Nullable _env       = nil;
-static NSString *const RUM_SDK_VERSION = @"2.4.2";
+static NSString *const RUM_SDK_VERSION = @"2.4.3-beta.1";
 
 #pragma mark - Internal Class Extensions
+
+@interface AlibabaCloudRUMEvent () {
+@protected
+    ALRRUMEvent *_candidate;
+}
+- (instancetype)initWithCandidate:(ALRRUMEvent *)candidate;
+@end
+
+@interface AlibabaCloudEventContext () {
+    ALRInterceptorContext *_context;
+}
+- (instancetype)initWithContext:(ALRInterceptorContext *)context;
+@end
+
+@interface ALRPublicEventInterceptorAdapter : NSObject <ALREventInterceptor>
+@property(nonatomic, strong) id<AlibabaCloudEventInterceptor> interceptor;
+@end
 
 @interface AlibabaCloudTracingContext ()
 @property (nonatomic, strong, readonly) AlibabaCloudTraceContext *context;
@@ -60,6 +84,23 @@ static NSString *ACEnvironmentStringFromEnv(AlibabaCloudEnv env) {
 #pragma mark - AlibabaCloudRUM
 
 @implementation AlibabaCloudRUM
+
++ (BOOL)setEventInterceptor:(id<AlibabaCloudEventInterceptor>)interceptor {
+    @try {
+        if (!interceptor) {
+            return [AlibabaCloudRUMSDK setEventInterceptor:nil];
+        }
+        if (![interceptor respondsToSelector:@selector(interceptEvent:context:)]) {
+            return NO;
+        }
+        ALRPublicEventInterceptorAdapter *adapter = [ALRPublicEventInterceptorAdapter new];
+        if (!adapter) return NO;
+        adapter.interceptor = interceptor;
+        return [AlibabaCloudRUMSDK setEventInterceptor:adapter];
+    } @catch (NSException *exception) {
+        return NO;
+    }
+}
 
 + (void)disableSwizzleMethod:(SEL)selector clazz:(Class)clazz {
     // Not supported yet.
@@ -353,6 +394,130 @@ static NSString *ACEnvironmentStringFromEnv(AlibabaCloudEnv env) {
     return [AlibabaCloudRUMSDK getLastActiveSpanId];
 }
 
+@end
+
+#pragma mark - Event Interception
+
+@implementation AlibabaCloudRUMEvent
++ (BOOL)accessInstanceVariablesDirectly { return NO; }
+- (instancetype)initWithCandidate:(ALRRUMEvent *)candidate {
+    self = [super init];
+    if (self) _candidate = candidate;
+    return self;
+}
+- (NSString *)eventType { return _candidate.eventType; }
+- (NSDictionary<NSString *, id> *)attributes { return _candidate.attributes; }
+- (id)attributeForKey:(NSString *)key { return [_candidate attributeForKey:key]; }
+@end
+
+@implementation AlibabaCloudCustomEvent
+- (NSString *)name { return [(ALRCustomEvent *)_candidate name]; }
+- (NSString *)group { return [(ALRCustomEvent *)_candidate group]; }
+- (NSString *)snapshots { return [(ALRCustomEvent *)_candidate snapshots]; }
+- (BOOL)setName:(NSString *)name { return [(ALRCustomEvent *)_candidate setName:name]; }
+- (BOOL)setGroup:(NSString *)group { return [(ALRCustomEvent *)_candidate setGroup:group]; }
+- (BOOL)setSnapshots:(NSString *)snapshots { return [(ALRCustomEvent *)_candidate setSnapshots:snapshots]; }
+@end
+
+@implementation AlibabaCloudViewEvent
+- (NSString *)name { return [(ALRViewEvent *)_candidate name]; }
+- (NSString *)snapshots { return [(ALRViewEvent *)_candidate snapshots]; }
+- (BOOL)setName:(NSString *)name { return [(ALRViewEvent *)_candidate setName:name]; }
+- (BOOL)setSnapshots:(NSString *)snapshots { return [(ALRViewEvent *)_candidate setSnapshots:snapshots]; }
+@end
+
+@implementation AlibabaCloudExceptionEvent
+- (NSString *)name { return [(ALRExceptionEvent *)_candidate name]; }
+- (NSString *)message { return [(ALRExceptionEvent *)_candidate message]; }
+- (NSString *)causedBy { return [(ALRExceptionEvent *)_candidate causedBy]; }
+- (NSString *)snapshots { return [(ALRExceptionEvent *)_candidate snapshots]; }
+- (BOOL)setName:(NSString *)name { return [(ALRExceptionEvent *)_candidate setName:name]; }
+- (BOOL)setMessage:(NSString *)message { return [(ALRExceptionEvent *)_candidate setMessage:message]; }
+- (BOOL)setCausedBy:(NSString *)causedBy { return [(ALRExceptionEvent *)_candidate setCausedBy:causedBy]; }
+- (BOOL)setSnapshots:(NSString *)snapshots { return [(ALRExceptionEvent *)_candidate setSnapshots:snapshots]; }
+@end
+
+@implementation AlibabaCloudLongTaskEvent
+- (NSString *)message { return [(ALRLongTaskEvent *)_candidate message]; }
+- (NSString *)snapshots { return [(ALRLongTaskEvent *)_candidate snapshots]; }
+- (BOOL)setMessage:(NSString *)message { return [(ALRLongTaskEvent *)_candidate setMessage:message]; }
+- (BOOL)setSnapshots:(NSString *)snapshots { return [(ALRLongTaskEvent *)_candidate setSnapshots:snapshots]; }
+@end
+
+@implementation AlibabaCloudActionEvent
+- (NSString *)name { return [(ALRActionEvent *)_candidate name]; }
+- (NSString *)snapshots { return [(ALRActionEvent *)_candidate snapshots]; }
+- (BOOL)setName:(NSString *)name { return [(ALRActionEvent *)_candidate setName:name]; }
+- (BOOL)setSnapshots:(NSString *)snapshots { return [(ALRActionEvent *)_candidate setSnapshots:snapshots]; }
+@end
+
+@implementation AlibabaCloudApplicationEvent
+- (NSString *)snapshots { return [(ALRApplicationEvent *)_candidate snapshots]; }
+- (BOOL)setSnapshots:(NSString *)snapshots { return [(ALRApplicationEvent *)_candidate setSnapshots:snapshots]; }
+@end
+
+@implementation AlibabaCloudResourceEvent
+- (NSString *)name { return [(ALRResourceEvent *)_candidate name]; }
+- (NSString *)message { return [(ALRResourceEvent *)_candidate message]; }
+- (NSString *)snapshots { return [(ALRResourceEvent *)_candidate snapshots]; }
+- (NSNumber *)statusCode { return [(ALRResourceEvent *)_candidate statusCode]; }
+- (NSNumber *)success { return [(ALRResourceEvent *)_candidate success]; }
+- (BOOL)setName:(NSString *)name { return [(ALRResourceEvent *)_candidate setName:name]; }
+- (BOOL)setMessage:(NSString *)message { return [(ALRResourceEvent *)_candidate setMessage:message]; }
+- (BOOL)setSnapshots:(NSString *)snapshots { return [(ALRResourceEvent *)_candidate setSnapshots:snapshots]; }
+- (BOOL)setResourceResult:(int64_t)statusCode success:(AlibabaCloudResourceSuccess)success {
+    return [(ALRResourceEvent *)_candidate setResourceResult:statusCode success:(ALRResourceSuccess)success];
+}
+@end
+
+@implementation AlibabaCloudEventContext
++ (BOOL)accessInstanceVariablesDirectly { return NO; }
+- (instancetype)initWithContext:(ALRInterceptorContext *)context {
+    self = [super init];
+    if (self) _context = context;
+    return self;
+}
+- (NSString *)source { return _context.source; }
+- (NSURLRequest *)request { return _context.request; }
+- (NSURLResponse *)response { return _context.response; }
+- (NSError *)error { return _context.error; }
+- (NSException *)exception { return _context.exception; }
+- (UIViewController *)viewController { return _context.viewController; }
+- (UIView *)targetView { return _context.targetView; }
+- (NSDictionary<NSString *, id> *)originalParameters { return _context.originalParameters; }
+- (NSDictionary<NSString *, id> *)recoveredRecord { return _context.recoveredRecord; }
+@end
+
+@implementation ALRPublicEventInterceptorAdapter
+- (ALRRUMEvent *)interceptEvent:(ALRRUMEvent *)event context:(ALRInterceptorContext *)context {
+    // Only sources implemented by this buildpack may enter a public callback.
+    AlibabaCloudRUMEvent *candidate = nil;
+    if ([event isKindOfClass:[ALRCustomEvent class]]) {
+        candidate = [[AlibabaCloudCustomEvent alloc] initWithCandidate:event];
+    } else if ([event isKindOfClass:[ALRExceptionEvent class]]) {
+        candidate = [[AlibabaCloudExceptionEvent alloc] initWithCandidate:event];
+    } else if ([event isKindOfClass:[ALRLongTaskEvent class]]) {
+        candidate = [[AlibabaCloudLongTaskEvent alloc] initWithCandidate:event];
+    } else if ([event isKindOfClass:[ALRViewEvent class]]) {
+        candidate = [[AlibabaCloudViewEvent alloc] initWithCandidate:event];
+    } else if ([event isKindOfClass:[ALRActionEvent class]]) {
+        candidate = [[AlibabaCloudActionEvent alloc] initWithCandidate:event];
+    } else if ([event isKindOfClass:[ALRApplicationEvent class]]) {
+        candidate = [[AlibabaCloudApplicationEvent alloc] initWithCandidate:event];
+    } else if ([event isKindOfClass:[ALRResourceEvent class]]) {
+        candidate = [[AlibabaCloudResourceEvent alloc] initWithCandidate:event];
+    } else {
+        return event;
+    }
+    AlibabaCloudEventContext *publicContext = [[AlibabaCloudEventContext alloc] initWithContext:context];
+    if (!candidate || !publicContext) return event;
+    AlibabaCloudRUMEvent *result = [self.interceptor interceptEvent:candidate context:publicContext];
+    if (!result) return nil;
+    if (result == candidate) return event;
+    // Never convert an invalid nonnil result into a drop or the current event.
+    // The core validates pointer identity before inspecting a returned object.
+    return (ALRRUMEvent *)(id)result;
+}
 @end
 
 #pragma mark - AlibabaCloudTracingContext

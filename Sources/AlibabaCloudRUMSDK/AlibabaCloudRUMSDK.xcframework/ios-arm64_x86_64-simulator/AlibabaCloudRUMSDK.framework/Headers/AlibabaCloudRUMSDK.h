@@ -15,6 +15,7 @@
 	
 
 #import <Foundation/Foundation.h>
+#import <AlibabaCloudRUMSDK/ALREventInterceptor.h>
 #import <AlibabaCloudRUMSDK/ALRSessionReplay.h>
 #import <AlibabaCloudRUMSDK/ALRSelfMonitorIntegration.h>
 
@@ -171,6 +172,9 @@ typedef NS_OPTIONS(NSUInteger, AlibabaCloudRUMModule) {
 @end
 
 @interface AlibabaCloudRUMSDK : NSObject
+
+/// Registers, replaces or clears the rule at any lifecycle stage.
++ (BOOL)setEventInterceptor:(nullable id<ALREventInterceptor>)interceptor;
 
 + (void)setDebuggable:(BOOL)debuggable;
 + (BOOL)start:(NSString *)configAddress workspace:(NSString *)workspace serviceId:(NSString *)serviceId;

@@ -14,8 +14,221 @@
 // limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#include <stdint.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+#pragma mark - Event Interception
+
+/// A callback-scoped candidate. Return this exact instance to commit edits.
+/// Attribute containers and nested values are isolated from SDK storage.
+@interface AlibabaCloudRUMEvent : NSObject
+@property(nonatomic, copy, readonly) NSString *eventType;
+@property(nonatomic, copy, readonly) NSDictionary<NSString *, id> *attributes;
+- (nullable id)attributeForKey:(NSString *)key NS_SWIFT_NAME(attribute(forKey:));
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+@end
+
+/// A native Custom event, metric, or business log. Other fields remain read-only.
+__attribute__((objc_subclassing_restricted))
+@interface AlibabaCloudCustomEvent : AlibabaCloudRUMEvent
+@property(nonatomic, copy, readonly, nullable) NSString *name;
+@property(nonatomic, copy, readonly, nullable) NSString *group;
+@property(nonatomic, copy, readonly, nullable) NSString *snapshots;
+/// Returns NO for nil or an expired candidate, preserving earlier valid edits.
+- (BOOL)setName:(NSString *)name NS_SWIFT_NAME(setName(_:));
+- (BOOL)setGroup:(NSString *)group NS_SWIFT_NAME(setGroup(_:));
+/// Replaces the whole string; empty, whitespace and non-JSON text are accepted.
+/// Does not rerun snapshot providers. Passing nil fails without deleting data.
+- (BOOL)setSnapshots:(NSString *)snapshots NS_SWIFT_NAME(setSnapshots(_:));
+@end
+
+/// A native custom, fatal or OOM Exception formed at its safe report recovery point.
+/// Identity, type, stack, binary images and associations remain read-only.
+/// Returning nil finishes and drops only this output; report cleanup still runs.
+__attribute__((objc_subclassing_restricted))
+@interface AlibabaCloudExceptionEvent : AlibabaCloudRUMEvent
+@property(nonatomic, copy, readonly, nullable) NSString *name;
+@property(nonatomic, copy, readonly, nullable) NSString *message;
+@property(nonatomic, copy, readonly, nullable) NSString *causedBy;
+@property(nonatomic, copy, readonly, nullable) NSString *snapshots;
+/// Each setter changes only its named field. Empty/whitespace strings are accepted.
+/// Nil or an expired candidate returns NO, preserving earlier successful edits.
+- (BOOL)setName:(NSString *)name NS_SWIFT_NAME(setName(_:));
+- (BOOL)setMessage:(NSString *)message NS_SWIFT_NAME(setMessage(_:));
+- (BOOL)setCausedBy:(NSString *)causedBy NS_SWIFT_NAME(setCausedBy(_:));
+/// Replaces the whole string without JSON validation or rerunning providers.
+- (BOOL)setSnapshots:(NSString *)snapshots NS_SWIFT_NAME(setSnapshots(_:));
+@end
+
+/// A native LongTask parsed from a stored diagnostic report at the safe point.
+/// The wire type stays longTask; only longtask.message and longtask.snapshots
+/// are writable. Duration, identity, associations, stack and images stay read-only.
+/// Returning nil drops only this output; report cleanup and later capture continue.
+__attribute__((objc_subclassing_restricted))
+@interface AlibabaCloudLongTaskEvent : AlibabaCloudRUMEvent
+@property(nonatomic, copy, readonly, nullable) NSString *message;
+@property(nonatomic, copy, readonly, nullable) NSString *snapshots;
+/// Empty/whitespace strings are accepted. Nil or an expired candidate returns NO,
+/// preserving earlier successful edits and without changing the observed duration.
+- (BOOL)setMessage:(NSString *)message NS_SWIFT_NAME(setMessage(_:));
+/// Replaces the whole string without JSON validation or rerunning providers.
+/// Empty/whitespace strings are accepted; nil fails without deleting data.
+- (BOOL)setSnapshots:(NSString *)snapshots NS_SWIFT_NAME(setSnapshots(_:));
+@end
+
+/// A supported native View snapshot. Identity, association and timing stay read-only.
+/// Returning nil falls back to the original View rather than dropping it.
+/// Includes view.type=replay metadata after records upload; binary uploads are unchanged.
+__attribute__((objc_subclassing_restricted))
+@interface AlibabaCloudViewEvent : AlibabaCloudRUMEvent
+@property(nonatomic, copy, readonly, nullable) NSString *name;
+@property(nonatomic, copy, readonly, nullable) NSString *snapshots;
+/// Returns NO for nil or an expired candidate, preserving earlier valid edits.
+/// A committed name updates the active view only while its identity still matches.
+- (BOOL)setName:(NSString *)name NS_SWIFT_NAME(setName(_:));
+/// Replaces the whole string; empty, whitespace and non-JSON text are accepted.
+/// Does not rerun snapshot providers. Passing nil fails without deleting data.
+- (BOOL)setSnapshots:(NSString *)snapshots NS_SWIFT_NAME(setSnapshots(_:));
+@end
+
+/// A supported native Action snapshot. Identity, association, type and timing
+/// remain read-only. Returning nil drops only this output, preserving action cleanup.
+__attribute__((objc_subclassing_restricted))
+@interface AlibabaCloudActionEvent : AlibabaCloudRUMEvent
+@property(nonatomic, copy, readonly, nullable) NSString *name;
+@property(nonatomic, copy, readonly, nullable) NSString *snapshots;
+/// Returns NO for nil or an expired candidate, preserving earlier valid edits.
+- (BOOL)setName:(NSString *)name NS_SWIFT_NAME(setName(_:));
+/// Replaces the whole string; empty, whitespace and non-JSON text are accepted.
+/// Does not rerun snapshot providers. Passing nil fails without deleting data.
+- (BOOL)setSnapshots:(NSString *)snapshots NS_SWIFT_NAME(setSnapshots(_:));
+@end
+
+/// A native cold-start or foreground/background Application snapshot.
+/// Only application.snapshots is writable. State, duration, start.*, thread.*,
+/// other application.* and app.* remain available through the base read-only API.
+/// Returning nil drops this output without changing lifecycle/session cleanup.
+__attribute__((objc_subclassing_restricted))
+@interface AlibabaCloudApplicationEvent : AlibabaCloudRUMEvent
+@property(nonatomic, copy, readonly, nullable) NSString *snapshots;
+/// Replaces the whole string; empty, whitespace and non-JSON text are accepted.
+/// Does not rerun snapshot providers. Passing nil fails without deleting data
+/// or reverting earlier edits. An expired candidate also returns NO.
+- (BOOL)setSnapshots:(NSString *)snapshots NS_SWIFT_NAME(setSnapshots(_:));
+@end
+
+typedef NS_ENUM(NSInteger, AlibabaCloudResourceSuccess) {
+    AlibabaCloudResourceSuccessUnknown NS_SWIFT_NAME(unknown) = -1,
+    AlibabaCloudResourceSuccessFailed NS_SWIFT_NAME(failed) = 0,
+    AlibabaCloudResourceSuccessSuccess NS_SWIFT_NAME(success) = 1,
+};
+
+/// A supported native Resource (manual, URLSession data completion/delegate/download, or
+/// NSURLConnection synchronous/completion/delegate).
+/// Identity, URL, tracing and view fields
+/// remain read-only. Numeric getters preserve exact integers; missing or
+/// unrepresentable values return nil, and unknown success values are not remapped.
+__attribute__((objc_subclassing_restricted))
+@interface AlibabaCloudResourceEvent : AlibabaCloudRUMEvent
+@property(nonatomic, copy, readonly, nullable) NSString *name;
+@property(nonatomic, copy, readonly, nullable) NSString *message;
+@property(nonatomic, copy, readonly, nullable) NSString *snapshots;
+@property(nonatomic, strong, readonly, nullable) NSNumber *statusCode;
+@property(nonatomic, strong, readonly, nullable) NSNumber *success;
+/// Returns NO for nil or an expired candidate, preserving earlier valid edits.
+- (BOOL)setName:(NSString *)name NS_SWIFT_NAME(setName(_:));
+- (BOOL)setMessage:(NSString *)message NS_SWIFT_NAME(setMessage(_:));
+/// Replaces the whole string; empty, whitespace and non-JSON text are accepted.
+/// Does not rerun snapshot providers. Passing nil fails without deleting data.
+- (BOOL)setSnapshots:(NSString *)snapshots NS_SWIFT_NAME(setSnapshots(_:));
+/// Atomically sets both fields. Accepts the full signed 64-bit status code range,
+/// including negative values and business codes. Invalid success returns NO
+/// without changing either field; no HTTP validation or success inference occurs.
+- (BOOL)setResourceResult:(int64_t)statusCode
+                  success:(AlibabaCloudResourceSuccess)success
+    NS_SWIFT_NAME(setResourceResult(_:success:));
+@end
+
+/// Native references are borrowed only during the synchronous callback.
+/// Do not retain native objects or send them to another thread. Object slots
+/// become nil after the callback. Read source to identify the capture path.
+/// ios.urlsession.data.completion borrows session/task/request/response/error/data
+/// when present. Request is the task's currentRequest; response/error/NSData are
+/// the original completion arguments. The host completion runs before interception
+/// on the same callback thread. This source covers data tasks, not upload tasks.
+/// URLSession delegate/download parameters borrow session/task/request/response/error
+/// when present; download completion additionally borrows location. Delegate
+/// completion does not retain an earlier download location or assemble body data.
+/// NSURLConnection synchronous/completion parameters borrow request/response/error
+/// and the original NSData under the data key, when present; neither source
+/// invents a connection. Delegate parameters borrow connection/request/response/error
+/// only; they do not assemble data from chunks or expose a provider as input.
+/// Nil values are omitted. References are independent of SnapshotProvider;
+/// headers/body are not read, copied, parsed, cached or reported for this context.
+/// ios.view.controller borrows the real viewController in both its typed slot
+/// and originalParameters; it does not inspect or copy the view hierarchy.
+/// ios.replay.metadata borrows the existing metadata in originalParameters["metadata"]
+/// after records upload, without recreating UI or networking objects.
+/// Supported native Actions borrow targetView/viewController only when available.
+/// UI references may be nil. Access them only on the callback's current thread;
+/// the SDK does not switch to the main thread or prepare missing UI objects.
+/// ios.application.launch and ios.application.state also run without UI objects;
+/// source identifies the producer and all available references remain borrowed.
+/// ios.exception.custom borrows the already parsed original report in recoveredRecord.
+/// originalParameters and live object slots are nil; processing can occur at a later
+/// launch and is not promised before setCustomException returns.
+/// ios.exception.nsexception/cpp/signal/mach/deadlock/watchdog borrow the original
+/// fatal recovery report at the same safe parser. No callback runs in a signal or
+/// fatal handler, and no live object from the terminated process is reconstructed.
+/// ios.exception.oom borrows the already parsed OOM diagnostic record at normal
+/// issue recovery. Live object slots and originalParameters are nil. A nil return
+/// ends this output and still completes the issue, deduplication and record cleanup.
+/// ios.longtask borrows its parsed diagnostic report in recoveredRecord at the safe
+/// report parser. originalParameters and live object slots are nil; this is not the
+/// blocked main thread or the stack-sampling site. Borrowed objects expire on return.
+__attribute__((objc_subclassing_restricted))
+@interface AlibabaCloudEventContext : NSObject
+@property(nonatomic, copy, readonly) NSString *source;
+@property(nonatomic, strong, readonly, nullable) NSURLRequest *request;
+@property(nonatomic, strong, readonly, nullable) NSURLResponse *response;
+@property(nonatomic, strong, readonly, nullable) NSError *error;
+@property(nonatomic, strong, readonly, nullable) NSException *exception;
+@property(nonatomic, strong, readonly, nullable) UIViewController *viewController;
+@property(nonatomic, strong, readonly, nullable) UIView *targetView;
+/// For ios.urlsession.data.completion: session is NSURLSession, task is the actual
+/// NSURLSessionDataTask, and request/response/error/data use their Foundation types.
+/// The original NSData may be empty, partial or absent on failure; no body is read
+/// or assembled to fill missing input, and SnapshotProvider is not required.
+/// For ios.urlconnection.*: request is NSURLRequest, response is NSURLResponse,
+/// error is NSError, data is NSData (synchronous/completion only), and connection
+/// is NSURLConnection (delegate only). Each key is absent when its value is nil.
+/// Read without modifying inputs; availability ends when the callback returns.
+@property(nonatomic, strong, readonly, nullable) NSDictionary<NSString *, id> *originalParameters;
+@property(nonatomic, strong, readonly, nullable) NSDictionary<NSString *, id> *recoveredRecord;
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+@end
+
+@protocol AlibabaCloudEventInterceptor <NSObject>
+/// Runs synchronously on the capture path's current thread for sampled Custom,
+/// supported native Resource/Action/Application, native View (including Replay metadata), custom or
+/// fatal/OOM recovery Exception and LongTask snapshots. Report callbacks run synchronously
+/// at the safe recovery point's current thread, outside internal locks, after storage.
+/// Replay metadata uses its safe post-upload thread; submission retries reuse the fixed result.
+/// Register before start to process cold-start output. Rules may be replaced or
+/// cleared at any lifecycle stage; each callback uses the current registration.
+/// Return the supplied candidate to commit. Nil drops supported non-View output;
+/// View output is retained using the original snapshot.
+/// A different instance or a catchable exception falls back to the original.
+/// Do not call event-generating SDK APIs here (Custom event/log/metric,
+/// exception or Resource reporting). Registering/replacing/clearing is allowed.
+- (nullable AlibabaCloudRUMEvent *)interceptEvent:(AlibabaCloudRUMEvent *)event
+                                         context:(AlibabaCloudEventContext *)context
+    NS_SWIFT_NAME(intercept(_:context:));
+@end
 
 #pragma mark - Enums
 
@@ -137,6 +350,12 @@ typedef NS_ENUM(NSUInteger, AlibabaCloudTouchPrivacy) {
 
 @interface AlibabaCloudRUM : NSObject
 
+/// Registers, replaces, or clears (nil) at any lifecycle stage. The latest
+/// registration is read at each actual callback entry. NO preserves the old
+/// registration. Registration does not restart the SDK or replay old events.
++ (BOOL)setEventInterceptor:(nullable id<AlibabaCloudEventInterceptor>)interceptor
+    NS_SWIFT_NAME(setEventInterceptor(_:));
+
 + (void)disableSwizzleMethod:(SEL)selector clazz:(Class)clazz;
 
 + (void)disableInspectClass:(NSString *)className NS_SWIFT_NAME(disableInspectClass(_:))
@@ -185,6 +404,9 @@ typedef NS_ENUM(NSUInteger, AlibabaCloudTouchPrivacy) {
 + (void)setSelfMonitorEnabled:(BOOL)enabeld NS_SWIFT_NAME(setSelfMonitorEnabled(_:));
 + (void)stopSDK NS_SWIFT_NAME(stopSDK());
 
+/// Saves a real custom exception report along the existing reporting flow.
+/// Interception occurs later at its safe report-processing point, possibly on
+/// a subsequent launch; no callback-before-return guarantee is provided.
 + (void)setCustomException:(NSString *)exceptionType
                    causeBy:(NSString *)causeBy
                  errorDump:(NSString *)errorDump NS_SWIFT_NAME(setCustomException(_:causeBy:errorDump:));

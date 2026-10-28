@@ -15,10 +15,25 @@
 @import XCTest;
 @import AlibabaCloudRUM;
 
+@interface TestEventInterceptor : NSObject <AlibabaCloudEventInterceptor>
+@end
+@implementation TestEventInterceptor
+- (AlibabaCloudRUMEvent *)interceptEvent:(AlibabaCloudRUMEvent *)event context:(AlibabaCloudEventContext *)context {
+    return event;
+}
+@end
+
 @interface AlibabaCloudRUMObjCTests : XCTestCase
 @end
 
 @implementation AlibabaCloudRUMObjCTests
+
+- (void)testEventInterceptorAcceptsReplacementAndExplicitClear {
+    XCTAssertTrue([AlibabaCloudRUM setEventInterceptor:[TestEventInterceptor new]]);
+    XCTAssertTrue([AlibabaCloudRUM setEventInterceptor:[TestEventInterceptor new]]);
+    XCTAssertFalse([AlibabaCloudRUM setEventInterceptor:(id)[NSObject new]]);
+    XCTAssertTrue([AlibabaCloudRUM setEventInterceptor:nil]);
+}
 
 #pragma mark - Enum Values
 
