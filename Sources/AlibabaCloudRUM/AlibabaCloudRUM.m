@@ -28,7 +28,7 @@ _Static_assert((NSInteger)AlibabaCloudResourceSuccessSuccess == (NSInteger)ALRRe
 static NSString * _Nullable _endpoint  = nil;
 static NSString * _Nullable _workspace = nil;
 static NSString * _Nullable _env       = nil;
-static NSString *const RUM_SDK_VERSION = @"2.4.3-beta.1";
+static NSString *const RUM_SDK_VERSION = @"2.4.3";
 
 #pragma mark - Internal Class Extensions
 
